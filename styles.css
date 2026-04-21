@@ -1,0 +1,122 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #f4f6f9;
+  margin: 0;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 30px;
+  background: white;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.topbar input {
+  width: 300px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.container {
+  padding: 30px;
+}
+
+h1 {
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.grid {
+  display: flex;
+  gap: 20px;
+}
+
+.card {
+  flex: 1;
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-header button {
+  background: #e3ecff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.bill-item, .loan-item {
+  padding: 15px;
+  margin-top: 15px;
+  border-radius: 12px;
+  border-left: 5px solid #ffa500;
+  background: #fafafa;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bill-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.bill-actions button {
+  background: #0d1b2a;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.loan-item {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.loan-top {
+  display: flex;
+  justify-content: space-between;
+}
+
+.progress {
+  height: 8px;
+  background: #ddd;
+  border-radius: 10px;
+  margin: 10px 0;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: #4a6cf7;
+}
+
+.loan-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.loan-bottom button {
+  background: #e3ecff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+}

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bills & Loans</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <input type="text" placeholder="Search..." />
+  <div class="bell">🔔</div>
+</header>
+
+<div class="container">
+  <h1>Bills & Loans</h1>
+  <p class="subtitle">Manage your financial items and tracking.</p>
+
+  <div class="grid">
+
+    <!-- Bills Section -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Upcoming Items</h2>
+        <button>Manage All</button>
+      </div>
+
+      <div id="billsList"></div>
+    </div>
+
+    <!-- Loans Section -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Active Accounts</h2>
+        <span class="arrow">›</span>
+      </div>
+
+      <div id="loansList"></div>
+    </div>
+
+  </div>
+</div>
+
+<script src="scripts.js"></script>
+</body>
+</html>
