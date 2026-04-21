@@ -1,38 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Bills & Loans</title>
-  <link rel="stylesheet" href="styles.css" />
+<meta charset="UTF-8">
+<title>Bills & Loans</title>
+
+<link rel="stylesheet" href="styles.css">
+
+<!-- Lucide Icons -->
+<script src="https://unpkg.com/lucide@latest"></script>
+
 </head>
 <body>
 
-<header class="topbar">
-  <input type="text" placeholder="Search..." />
-  <div class="bell">🔔</div>
-</header>
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="search-box">
+    <i data-lucide="search"></i>
+    <input type="text" placeholder="Search transactions, bills..." />
+  </div>
+  <div class="icons">
+    <i data-lucide="bell"></i>
+  </div>
+</div>
 
-<div class="container">
+<!-- MAIN -->
+<div class="main">
+
   <h1>Bills & Loans</h1>
-  <p class="subtitle">Manage your financial items and tracking.</p>
+  <p class="subtitle">Manage your active bills, due dates, and loan tracking.</p>
 
   <div class="grid">
 
-    <!-- Bills Section -->
+    <!-- LEFT: BILLS -->
     <div class="card">
+
       <div class="card-header">
-        <h2>Upcoming Items</h2>
-        <button>Manage All</button>
+        <div class="title">
+          <i data-lucide="calendar"></i>
+          <h3>Upcoming Bills</h3>
+        </div>
+
+        <button class="manage-btn">Manage All</button>
       </div>
 
       <div id="billsList"></div>
     </div>
 
-    <!-- Loans Section -->
+    <!-- RIGHT: LOANS -->
     <div class="card">
+
       <div class="card-header">
-        <h2>Active Accounts</h2>
-        <span class="arrow">›</span>
+        <div class="title">
+          <i data-lucide="landmark"></i>
+          <h3>Active Loans</h3>
+        </div>
+        <i data-lucide="chevron-right"></i>
       </div>
 
       <div id="loansList"></div>
@@ -42,5 +64,10 @@
 </div>
 
 <script src="scripts.js"></script>
+
+<script>
+  lucide.createIcons();
+</script>
+
 </body>
 </html>

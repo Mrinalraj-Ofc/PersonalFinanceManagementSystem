@@ -1,65 +1,67 @@
-// Sample placeholders (replace with DB data later)
 const bills = [
-  { title: "Item 1", due: "Date", amount: "Amount" },
-  { title: "Item 2", due: "Date", amount: "Amount" }
+  { name: "Bill Name", due: "Date", amount: "Amount", autopay: true },
+  { name: "Bill Name", due: "Date", amount: "Amount", autopay: false }
 ];
 
 const loans = [
-  {
-    name: "Account 1",
-    progress: 60,
-    monthly: "Amount"
-  },
-  {
-    name: "Account 2",
-    progress: 30,
-    monthly: "Amount"
-  }
+  { name: "Loan Name", progress: 65, monthly: "Amount" },
+  { name: "Loan Name", progress: 30, monthly: "Amount" }
 ];
 
-// Render Bills
+// Bills
 const billsContainer = document.getElementById("billsList");
 
-bills.forEach(bill => {
-  const div = document.createElement("div");
-  div.className = "bill-item";
+bills.forEach(b => {
+  billsContainer.innerHTML += `
+    <div class="bill">
 
-  div.innerHTML = `
-    <div class="bill-info">
-      <strong>${bill.title}</strong>
-      <span>Due: ${bill.due}</span>
-    </div>
-    <div class="bill-actions">
-      <span>${bill.amount}</span>
-      <button>Pay Now</button>
+      <div class="bill-left">
+        <div class="bill-icon">
+          <i data-lucide="clock"></i>
+        </div>
+
+        <div class="bill-info">
+          <strong>${b.name}</strong>
+          <small>
+            Due: ${b.due}
+            ${b.autopay ? '<span class="badge">AUTOPAY</span>' : ''}
+          </small>
+        </div>
+      </div>
+
+      <div>
+        <strong>${b.amount}</strong><br>
+        <button class="pay-btn">Pay Now</button>
+      </div>
+
     </div>
   `;
-
-  billsContainer.appendChild(div);
 });
 
-// Render Loans
+// Loans
 const loansContainer = document.getElementById("loansList");
 
-loans.forEach(loan => {
-  const div = document.createElement("div");
-  div.className = "loan-item";
+loans.forEach(l => {
+  loansContainer.innerHTML += `
+    <div class="loan">
 
-  div.innerHTML = `
-    <div class="loan-top">
-      <strong>${loan.name}</strong>
-      <span>Remaining</span>
-    </div>
+      <div class="loan-top">
+        <strong>${l.name}</strong>
+        <span>Remaining</span>
+      </div>
 
-    <div class="progress">
-      <div class="progress-bar" style="width:${loan.progress}%"></div>
-    </div>
+      <div class="progress">
+        <div class="progress-bar" style="width:${l.progress}%"></div>
+      </div>
 
-    <div class="loan-bottom">
-      <span>Monthly: ${loan.monthly}</span>
-      <button>Extra Payment</button>
+      <div class="loan-bottom">
+        <span>Monthly: ${l.monthly}</span>
+        <button class="extra-btn">Make Extra Payment</button>
+      </div>
+
     </div>
   `;
-
-  loansContainer.appendChild(div);
 });
+
+// render icons
+lucide.createIcons();

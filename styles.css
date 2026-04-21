@@ -1,25 +1,35 @@
 body {
-  font-family: 'Segoe UI', sans-serif;
-  background: #f4f6f9;
   margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: #f6f8fc;
 }
 
+/* TOPBAR */
 .topbar {
   display: flex;
   justify-content: space-between;
   padding: 15px 30px;
   background: white;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
-.topbar input {
-  width: 300px;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
+.search-box {
+  display: flex;
+  align-items: center;
+  background: #f1f3f8;
+  padding: 8px 12px;
+  border-radius: 12px;
+  gap: 10px;
 }
 
-.container {
+.search-box input {
+  border: none;
+  outline: none;
+  background: transparent;
+}
+
+/* MAIN */
+.main {
   padding: 30px;
 }
 
@@ -28,21 +38,23 @@ h1 {
 }
 
 .subtitle {
-  color: #666;
-  margin-bottom: 20px;
+  color: #6b7280;
+  margin-bottom: 25px;
 }
 
+/* GRID */
 .grid {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 20px;
 }
 
+/* CARD */
 .card {
-  flex: 1;
   background: white;
+  border-radius: 18px;
   padding: 20px;
-  border-radius: 16px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
 }
 
 .card-header {
@@ -51,32 +63,24 @@ h1 {
   align-items: center;
 }
 
-.card-header button {
-  background: #e3ecff;
+.title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* BUTTONS */
+.manage-btn {
+  background: #e8edff;
+  color: #3b5bfd;
   border: none;
-  padding: 8px 12px;
+  padding: 8px 14px;
   border-radius: 10px;
   cursor: pointer;
 }
 
-.bill-item, .loan-item {
-  padding: 15px;
-  margin-top: 15px;
-  border-radius: 12px;
-  border-left: 5px solid #ffa500;
-  background: #fafafa;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.bill-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.bill-actions button {
-  background: #0d1b2a;
+.pay-btn {
+  background: #0f172a;
   color: white;
   border: none;
   padding: 8px 14px;
@@ -84,9 +88,46 @@ h1 {
   cursor: pointer;
 }
 
-.loan-item {
+/* BILL ITEM */
+.bill {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  margin-top: 15px;
+  border-radius: 14px;
+  background: #fafafa;
+  border-left: 4px solid #f59e0b;
+}
+
+.bill-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bill-icon {
+  background: #fff7ed;
+  padding: 10px;
+  border-radius: 50%;
+}
+
+.bill-info {
+  display: flex;
   flex-direction: column;
-  align-items: stretch;
+}
+
+.badge {
+  background: #e0e7ff;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 11px;
+  margin-left: 5px;
+}
+
+/* LOAN */
+.loan {
+  margin-top: 20px;
 }
 
 .loan-top {
@@ -96,15 +137,15 @@ h1 {
 
 .progress {
   height: 8px;
-  background: #ddd;
+  background: #e5e7eb;
   border-radius: 10px;
   margin: 10px 0;
-  overflow: hidden;
 }
 
 .progress-bar {
   height: 100%;
-  background: #4a6cf7;
+  background: linear-gradient(90deg, #6366f1, #3b82f6);
+  border-radius: 10px;
 }
 
 .loan-bottom {
@@ -113,8 +154,8 @@ h1 {
   align-items: center;
 }
 
-.loan-bottom button {
-  background: #e3ecff;
+.extra-btn {
+  background: #e8edff;
   border: none;
   padding: 6px 12px;
   border-radius: 10px;
