@@ -2,72 +2,102 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Bills & Loans</title>
+<title>VaultSync</title>
 
 <link rel="stylesheet" href="styles.css">
-
-<!-- Lucide Icons -->
 <script src="https://unpkg.com/lucide@latest"></script>
 
 </head>
 <body>
 
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <h2 class="logo">VaultSync</h2>
+  <ul>
+    <li class="active">Dashboard</li>
+    <li>Transactions</li>
+    <li>Bills</li>
+    <li>Loans</li>
+    <li>Reports</li>
+    <li>Settings</li>
+  </ul>
+</div>
+
 <!-- TOPBAR -->
 <div class="topbar">
   <div class="search-box">
     <i data-lucide="search"></i>
-    <input type="text" placeholder="Search transactions, bills..." />
-  </div>
-  <div class="icons">
-    <i data-lucide="bell"></i>
+    <input type="text" id="searchInput" placeholder="Search bills..." oninput="searchBills()">
   </div>
 </div>
 
 <!-- MAIN -->
 <div class="main">
-
   <h1>Bills & Loans</h1>
-  <p class="subtitle">Manage your active bills, due dates, and loan tracking.</p>
 
   <div class="grid">
 
-    <!-- LEFT: BILLS -->
+    <!-- BILLS -->
     <div class="card">
-
       <div class="card-header">
-        <div class="title">
-          <i data-lucide="calendar"></i>
-          <h3>Upcoming Bills</h3>
-        </div>
+        <h3>Upcoming Bills</h3>
 
-        <button class="manage-btn">Manage All</button>
+        <div>
+          <button class="add-btn" onclick="openAddModal()">+ Add</button>
+          <button class="delete-btn" onclick="toggleDeleteMode()">Delete</button>
+        </div>
       </div>
 
       <div id="billsList"></div>
+
+      <!-- DELETE ACTION -->
+      <button id="deleteSelectedBtn" class="confirm-delete hidden" onclick="deleteSelected()">
+        Delete Selected
+      </button>
     </div>
 
-    <!-- RIGHT: LOANS -->
+    <!-- LOANS -->
     <div class="card">
-
-      <div class="card-header">
-        <div class="title">
-          <i data-lucide="landmark"></i>
-          <h3>Active Loans</h3>
-        </div>
-        <i data-lucide="chevron-right"></i>
-      </div>
-
-      <div id="loansList"></div>
+      <h3>Active Loans</h3>
+      <p style="color:gray;">(UI placeholder)</p>
     </div>
 
   </div>
 </div>
 
-<script src="scripts.js"></script>
+<!-- ADD MODAL -->
+<div id="addModal" class="modal hidden">
+  <div class="modal-box">
+    <h3>Add Bill</h3>
 
-<script>
-  lucide.createIcons();
-</script>
+    <input id="billName" placeholder="Bill name">
+    <input id="billAmount" type="number" placeholder="Amount">
+    <input id="billDate" type="date">
+
+    <div class="modal-actions">
+      <button onclick="addBill()">Add</button>
+      <button onclick="closeAddModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAY MODAL -->
+<div id="payModal" class="modal hidden">
+  <div class="modal-box">
+    <h3>Make Payment</h3>
+
+    <p id="rangeInfo"></p>
+    <input id="payAmount" type="number" placeholder="Enter amount">
+
+    <div class="modal-actions">
+      <button onclick="confirmPayment()">Confirm</button>
+      <button onclick="closePayModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script src="scripts.js"></script>
+<script>lucide.createIcons();</script>
 
 </body>
 </html>
