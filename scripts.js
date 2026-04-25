@@ -1,67 +1,123 @@
-const bills = [
-  { name: "Bill Name", due: "Date", amount: "Amount", autopay: true },
-  { name: "Bill Name", due: "Date", amount: "Amount", autopay: false }
-];
+let bills = [];
+let currentBillId = null;
+let deleteMode = false;
+let selectedBills = [];
 
-const loans = [
-  { name: "Loan Name", progress: 65, monthly: "Amount" },
-  { name: "Loan Name", progress: 30, monthly: "Amount" }
-];
+// RENDER
+function renderBills(list = bills) {
+  let container = document.getElementById("billsList");
+  container.innerHTML = "";
 
-// Bills
-const billsContainer = document.getElementById("billsList");
+  list.forEach(b => {
+    container.innerHTML += `
+      <div class="bill ${selectedBills.includes(b.id) ? "selected" : ""}" 
+           onclick="${deleteMode ? `selectBill(${b.id})` : ""}">
 
-bills.forEach(b => {
-  billsContainer.innerHTML += `
-    <div class="bill">
-
-      <div class="bill-left">
-        <div class="bill-icon">
-          <i data-lucide="clock"></i>
+        <div>
+          <strong>${b.name}</strong><br>
+          <small>Due: ${b.due}</small>
         </div>
 
-        <div class="bill-info">
-          <strong>${b.name}</strong>
-          <small>
-            Due: ${b.due}
-            ${b.autopay ? '<span class="badge">AUTOPAY</span>' : ''}
-          </small>
+        <div>
+          ₹${b.amount}<br>
+          ${!deleteMode ? `<button class="pay-btn" onclick="event.stopPropagation(); openPayModal(${b.id})">Pay Now</button>` : ""}
         </div>
+
       </div>
+    `;
+  });
+}
 
-      <div>
-        <strong>${b.amount}</strong><br>
-        <button class="pay-btn">Pay Now</button>
-      </div>
+// ADD BILL
+function openAddModal() {
+  document.getElementById("addModal").classList.remove("hidden");
+}
 
-    </div>
-  `;
-});
+function closeAddModal() {
+  document.getElementById("addModal").classList.add("hidden");
+}
 
-// Loans
-const loansContainer = document.getElementById("loansList");
+function addBill() {
+  let name = document.getElementById("billName").value;
+  let amount = Number(document.getElementById("billAmount").value);
+  let date = document.getElementById("billDate").value;
 
-loans.forEach(l => {
-  loansContainer.innerHTML += `
-    <div class="loan">
+  if (!name || !amount || !date) return alert("Fill all fields");
 
-      <div class="loan-top">
-        <strong>${l.name}</strong>
-        <span>Remaining</span>
-      </div>
+  bills.push({
+    id: Date.now(),
+    name,
+    amount,
+    due: date
+  });
 
-      <div class="progress">
-        <div class="progress-bar" style="width:${l.progress}%"></div>
-      </div>
+  closeAddModal();
+  renderBills();
+}
 
-      <div class="loan-bottom">
-        <span>Monthly: ${l.monthly}</span>
-        <button class="extra-btn">Make Extra Payment</button>
-      </div>
+// PAY
+function openPayModal(id) {
+  currentBillId = id;
+  let bill = bills.find(b => b.id === id);
 
-    </div>
-  `;
-});
+  document.getElementById("rangeInfo").innerText =
+    `Min: ₹1 | Max: ₹${bill.amount}`;
 
-// render icons
-lucide.createIcons();
+  document.getElementById("payModal").classList.remove("hidden");
+}
+
+function closePayModal() {
+  document.getElementById("payModal").classList.add("hidden");
+}
+
+function confirmPayment() {
+  let pay = Number(document.getElementById("payAmount").value);
+  let bill = bills.find(b => b.id === currentBillId);
+
+  if (!bill || pay <= 0 || pay > bill.amount) return alert("Invalid");
+
+  bill.amount -= pay;
+
+  if (bill.amount === 0) {
+    bills = bills.filter(b => b.id !== bill.id);
+  }
+
+  closePayModal();
+  renderBills();
+}
+
+// DELETE MODE
+function toggleDeleteMode() {
+  deleteMode = !deleteMode;
+  selectedBills = [];
+
+  document.getElementById("deleteSelectedBtn").classList.toggle("hidden");
+
+  renderBills();
+}
+
+function selectBill(id) {
+  if (selectedBills.includes(id)) {
+    selectedBills = selectedBills.filter(b => b !== id);
+  } else {
+    selectedBills.push(id);
+  }
+  renderBills();
+}
+
+function deleteSelected() {
+  bills = bills.filter(b => !selectedBills.includes(b.id));
+  selectedBills = [];
+  toggleDeleteMode();
+}
+
+// SEARCH
+function searchBills() {
+  let q = document.getElementById("searchInput").value.toLowerCase();
+
+  let filtered = bills.filter(b =>
+    b.name.toLowerCase().includes(q)
+  );
+
+  renderBills(filtered);
+}
