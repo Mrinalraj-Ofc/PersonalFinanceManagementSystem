@@ -4,42 +4,55 @@ body {
   background: #f6f8fc;
 }
 
-/* TOPBAR */
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  padding: 15px 30px;
-  background: white;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+/* SIDEBAR */
+.sidebar {
+  position: fixed;
+  width: 220px;
+  height: 100%;
+  background: #0f172a;
+  color: white;
+  padding: 20px;
 }
 
+.sidebar li {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.sidebar .active {
+  background: #1e293b;
+  border-radius: 8px;
+}
+
+/* TOPBAR */
+.topbar {
+  margin-left: 240px;
+  padding: 15px;
+  background: white;
+}
+
+/* SEARCH */
 .search-box {
   display: flex;
   align-items: center;
-  background: #f1f3f8;
-  padding: 8px 12px;
-  border-radius: 12px;
   gap: 10px;
+  background: #f1f5f9;
+  padding: 10px 14px;
+  border-radius: 12px;
+  width: 300px;
 }
 
 .search-box input {
   border: none;
   outline: none;
   background: transparent;
+  width: 100%;
 }
 
 /* MAIN */
 .main {
+  margin-left: 240px;
   padding: 30px;
-}
-
-h1 {
-  margin-bottom: 5px;
-}
-
-.subtitle {
-  color: #6b7280;
-  margin-bottom: 25px;
 }
 
 /* GRID */
@@ -52,112 +65,114 @@ h1 {
 /* CARD */
 .card {
   background: white;
-  border-radius: 18px;
   padding: 20px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+  border-radius: 15px;
 }
 
+/* HEADER */
 .card-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
 }
 
-.title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-/* BUTTONS */
-.manage-btn {
-  background: #e8edff;
-  color: #3b5bfd;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-.pay-btn {
-  background: #0f172a;
-  color: white;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-/* BILL ITEM */
+/* BILL */
 .bill {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 15px;
-  margin-top: 15px;
-  border-radius: 14px;
+  padding: 12px;
+  margin-top: 10px;
   background: #fafafa;
-  border-left: 4px solid #f59e0b;
-}
-
-.bill-left {
-  display: flex;
+  border-radius: 10px;
   align-items: center;
-  gap: 12px;
 }
 
-.bill-icon {
-  background: #fff7ed;
-  padding: 10px;
-  border-radius: 50%;
+.bill.selected {
+  border: 2px solid red;
 }
 
-.bill-info {
+/* BUTTONS */
+.add-btn { background: #3b82f6; color: white; }
+.delete-btn { background: #ef4444; color: white; }
+.pay-btn { background: black; color: white; }
+
+button {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+/* DELETE CONFIRM */
+.confirm-delete {
+  margin-top: 10px;
+  background: red;
+  color: white;
+  width: 100%;
+}
+
+/* MODAL */
+/* MODAL BACKDROP */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  width: 100vw;
+  height: 100vh;
+
+  background: rgba(0,0,0,0.4);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 9999; /* ensure above sidebar */
+}
+
+/* HIDE */
+.hidden {
+  display: none;
+}
+
+/* MODAL BOX */
+.modal-box {
+  background: white;
+
+  width: 100%;
+  max-width: 360px;
+
+  max-height: 85vh;   /* prevents overflow */
+  overflow-y: auto;   /* scroll inside if needed */
+
+  padding: 20px;
+  border-radius: 14px;
+
   display: flex;
   flex-direction: column;
+  gap: 12px;
+
+  /* CENTER FIX (extra safety) */
+  position: relative;
 }
 
-.badge {
-  background: #e0e7ff;
-  padding: 2px 6px;
-  border-radius: 6px;
-  font-size: 11px;
-  margin-left: 5px;
+/* INPUTS */
+.modal-box input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
 }
 
-/* LOAN */
-.loan {
-  margin-top: 20px;
-}
-
-.loan-top {
+/* BUTTONS */
+.modal-actions {
   display: flex;
-  justify-content: space-between;
+  gap: 10px;
 }
 
-.progress {
-  height: 8px;
-  background: #e5e7eb;
-  border-radius: 10px;
-  margin: 10px 0;
-}
-
-.progress-bar {
-  height: 100%;
-  background: linear-gradient(90deg, #6366f1, #3b82f6);
-  border-radius: 10px;
-}
-
-.loan-bottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.extra-btn {
-  background: #e8edff;
+.modal-actions button {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
   border: none;
-  padding: 6px 12px;
-  border-radius: 10px;
   cursor: pointer;
 }
