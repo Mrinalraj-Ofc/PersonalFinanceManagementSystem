@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VaultSync - Personal Finance Manager</title>
+
+  <style>
+    /* ---- BASIC RESET ---- */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background: #f0f4f8; }
+
+    /* ---- LOADING PAGE ---- */
+    #loadingPage {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: #0f172a;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 20px;
+      z-index: 999;
+    }
+    #loadingPage h2 { color: white; font-size: 28px; letter-spacing: 2px; }
+    #loadingPage p  { color: #94a3b8; font-size: 14px; }
+    .loading-bar-bg {
+      width: 250px; height: 6px;
+      background: #1e293b; border-radius: 10px; overflow: hidden;
+    }
+    .loading-bar-fill {
+      height: 100%; width: 0%;
+      background: #0ea5e9; border-radius: 10px;
+      transition: width 0.1s;
+    }
+    .logo-circle {
+      width: 70px; height: 70px; border-radius: 50%;
+      background: #0ea5e9;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 30px; color: white; font-weight: bold;
+    }
+
+    /* ---- WELCOME PAGE ---- */
+    #welcomePage {
+      display: none;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: #0f172a;
+      flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+      z-index: 998; text-align: center; padding: 20px;
+    }
+    #welcomePage h1 { color: white; font-size: 36px; }
+    #welcomePage h1 span { color: #0ea5e9; }
+    #welcomePage p  { color: #94a3b8; font-size: 16px; max-width: 500px; line-height: 1.6; }
+    .welcome-btns { display: flex; gap: 14px; margin-top: 10px; }
+    .btn-blue {
+      padding: 12px 28px; background: #0ea5e9;
+      color: white; border: none; border-radius: 8px;
+      font-size: 15px; cursor: pointer;
+    }
+    .btn-blue:hover { background: #0284c7; }
+    .btn-outline {
+      padding: 12px 28px; background: transparent;
+      color: #94a3b8; border: 1px solid #334155;
+      border-radius: 8px; font-size: 15px; cursor: pointer;
+    }
+    .btn-outline:hover { border-color: #0ea5e9; color: #0ea5e9; }
+
+    /* ---- LOGIN / SIGNUP MODAL ---- */
+    .modal-bg {
+      display: none; position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6); z-index: 1000;
+      align-items: center; justify-content: center;
+    }
+    .modal-bg.show { display: flex; }
+    .modal-box {
+      background: white; border-radius: 12px;
+      padding: 32px; width: 380px; max-width: 95%;
+    }
+    .modal-box h2 { margin-bottom: 6px; font-size: 22px; color: #0f172a; }
+    .modal-box p  { color: #64748b; font-size: 13px; margin-bottom: 20px; }
+
+    .tab-row { display: flex; gap: 0; margin-bottom: 22px; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; }
+    .tab-btn {
+      flex: 1; padding: 9px; background: white;
+      border: none; cursor: pointer; font-size: 14px; color: #64748b;
+    }
+    .tab-btn.active { background: #0ea5e9; color: white; font-weight: bold; }
+
+    label { display: block; font-size: 13px; color: #374151; margin-bottom: 5px; }
+    input[type="text"], input[type="email"],
+    input[type="password"], input[type="number"],
+    input[type="date"], select {
+      width: 100%; padding: 10px 12px;
+      border: 1px solid #d1d5db; border-radius: 8px;
+      font-size: 14px; margin-bottom: 14px;
+      font-family: Arial, sans-serif;
+    }
+    input:focus, select:focus { outline: none; border-color: #0ea5e9; }
+
+    .submit-btn {
+      width: 100%; padding: 12px;
+      background: #0ea5e9; color: white;
+      border: none; border-radius: 8px;
+      font-size: 15px; font-weight: bold; cursor: pointer;
+      margin-top: 4px;
+    }
+    .submit-btn:hover { background: #0284c7; }
+
+    /* ---- MAIN APP LAYOUT ---- */
+    #appPage { display: none; }
+    #appPage.show { display: flex; }
+
+    .sidebar {
+      width: 220px; min-height: 100vh;
+      background: #0f172a; color: white;
+      display: flex; flex-direction: column;
+    }
+    .sidebar-brand {
+      padding: 20px 16px;
+      border-bottom: 1px solid #1e293b;
+      font-size: 20px; font-weight: bold;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .sidebar-brand span { color: #0ea5e9; }
+    .sidebar-icon-box {
+      width: 34px; height: 34px; background: #0ea5e9;
+      border-radius: 8px; display: flex; align-items: center;
+      justify-content: center; font-weight: bold; font-size: 16px;
+    }
+    .nav-label {
+      font-size: 10px; color: #475569; letter-spacing: 1px;
+      text-transform: uppercase; padding: 16px 16px 6px;
+    }
+    .nav-link {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 16px; cursor: pointer;
+      color: #94a3b8; font-size: 14px; border-radius: 6px;
+      margin: 2px 8px;
+    }
+    .nav-link:hover { background: #1e293b; color: white; }
+    .nav-link.active { background: #1e3a5f; color: #38bdf8; font-weight: bold; }
+
+    .sidebar-user {
+      margin-top: auto; padding: 16px;
+      border-top: 1px solid #1e293b;
+      font-size: 13px; color: #94a3b8;
+    }
+    .sidebar-user strong { display: block; color: white; font-size: 14px; }
+    .logout-btn {
+      margin-top: 8px; width: 100%; padding: 7px;
+      background: #1e293b; color: #94a3b8;
+      border: none; border-radius: 6px;
+      cursor: pointer; font-size: 12px;
+    }
+    .logout-btn:hover { background: #ef4444; color: white; }
+
+    /* ---- MAIN CONTENT ---- */
+    .main-content { flex: 1; overflow-y: auto; }
+
+    /* Top bar */
+    .topbar {
+      background: white; padding: 12px 24px;
+      display: flex; align-items: center; gap: 12px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .topbar input {
+      flex: 1; max-width: 400px; padding: 8px 14px;
+      border: 1px solid #e2e8f0; border-radius: 8px;
+      font-size: 14px; background: #f8fafc;
+    }
+    .topbar input:focus { border-color: #0ea5e9; outline: none; }
+
+    /* ---- PAGES ---- */
+    .page { display: none; padding: 24px; }
+    .page.active { display: block; }
+
+    .page-title { font-size: 24px; font-weight: bold; color: #0f172a; margin-bottom: 4px; }
+    .page-sub   { font-size: 13px; color: #64748b; margin-bottom: 20px; }
+
+    /* ---- DASHBOARD CARDS ---- */
+    .cards-row {
+      display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px;
+    }
+    .card {
+      background: white; border-radius: 10px;
+      border: 1px solid #e2e8f0; padding: 18px;
+      flex: 1; min-width: 180px;
+    }
+    .card-dark { background: #0f172a; color: white; }
+    .card-label { font-size: 12px; color: #64748b; margin-bottom: 6px; }
+    .card-dark .card-label { color: #94a3b8; }
+    .card-value { font-size: 22px; font-weight: bold; color: #0f172a; }
+    .card-dark .card-value { color: white; font-size: 26px; }
+    .card-badge {
+      display: inline-block; font-size: 11px; font-weight: bold;
+      padding: 3px 8px; border-radius: 20px; margin-bottom: 8px;
+    }
+    .badge-green { background: #d1fae5; color: #059669; }
+    .badge-red   { background: #fee2e2; color: #dc2626; }
+
+    /* ---- NOTIFICATIONS ---- */
+    .notif-box {
+      background: white; border: 1px solid #e2e8f0;
+      border-radius: 10px; padding: 16px; margin-bottom: 20px;
+    }
+    .notif-box h3 { font-size: 14px; color: #374151; margin-bottom: 10px; }
+    .notif-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 10px; border-radius: 6px; margin-bottom: 6px;
+      font-size: 13px;
+    }
+    .notif-warn    { background: #fef3c7; color: #92400e; }
+    .notif-danger  { background: #fee2e2; color: #991b1b; }
+    .notif-info    { background: #e0f2fe; color: #0369a1; }
+    .notif-success { background: #d1fae5; color: #065f46; }
+
+    /* ---- SIMPLE LINE CHART (using divs) ---- */
+    .chart-box {
+      background: white; border: 1px solid #e2e8f0;
+      border-radius: 10px; padding: 20px; margin-bottom: 20px;
+    }
+    .chart-box h3 { font-size: 15px; font-weight: bold; color: #0f172a; margin-bottom: 14px; }
+    .bar-chart { display: flex; align-items: flex-end; gap: 12px; height: 140px; }
+    .bar-group { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
+    .bar-wrap  { display: flex; gap: 3px; align-items: flex-end; height: 120px; }
+    .bar {
+      width: 14px; border-radius: 4px 4px 0 0;
+      min-height: 4px; transition: height 0.3s;
+    }
+    .bar.income  { background: #10b981; }
+    .bar.expense { background: #ef4444; }
+    .bar.savings { background: #6366f1; }
+    .bar-month { font-size: 10px; color: #94a3b8; margin-top: 4px; }
+    .chart-legend { display: flex; gap: 16px; margin-top: 10px; font-size: 12px; color: #64748b; }
+    .legend-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; }
+
+    /* ---- TABLES ---- */
+    table {
+      width: 100%; border-collapse: collapse;
+      background: white; border-radius: 10px;
+      border: 1px solid #e2e8f0; overflow: hidden;
+    }
+    thead { background: #f8fafc; }
+    th { padding: 11px 16px; text-align: left; font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+    td { padding: 13px 16px; font-size: 14px; color: #374151; border-top: 1px solid #f1f5f9; }
+    tr:hover td { background: #f8fafc; }
+
+    .type-income  { color: #059669; font-weight: bold; }
+    .type-expense { color: #dc2626; font-weight: bold; }
+    .type-savings { color: #0ea5e9; font-weight: bold; }
+
+    .status-badge {
+      padding: 3px 10px; border-radius: 20px;
+      font-size: 11px; font-weight: bold;
+    }
+    .status-completed { background: #d1fae5; color: #065f46; }
+    .status-pending   { background: #fef3c7; color: #92400e; }
+
+    /* ---- FILTER TABS ---- */
+    .filter-tabs { display: flex; gap: 6px; margin-bottom: 14px; }
+    .filter-tab {
+      padding: 7px 18px; border-radius: 8px;
+      border: 1px solid #e2e8f0; background: white;
+      font-size: 13px; cursor: pointer; color: #64748b;
+    }
+    .filter-tab.active { background: #0ea5e9; color: white; border-color: #0ea5e9; }
+
+    .search-bar-row { display: flex; gap: 10px; margin-bottom: 14px; align-items: center; }
+    .search-bar-row input {
+      padding: 8px 14px; border: 1px solid #e2e8f0; border-radius: 8px;
+      font-size: 14px; width: 260px; background: #f8fafc;
+    }
+    .search-bar-row input:focus { border-color: #0ea5e9; outline: none; }
+    .date-range { display: flex; gap: 8px; align-items: center; font-size: 13px; color: #64748b; }
+    .date-range input { width: 140px; }
+
+    /* ---- ADD BUTTON ---- */
+    .add-btn {
+      padding: 9px 20px; background: #0ea5e9; color: white;
+      border: none; border-radius: 8px; font-size: 14px;
+      font-weight: bold; cursor: pointer;
+    }
+    .add-btn:hover { background: #0284c7; }
+    .export-btn {
+      padding: 9px 16px; background: white; color: #374151;
+      border: 1px solid #e2e8f0; border-radius: 8px;
+      font-size: 14px; cursor: pointer;
+    }
+    .export-btn:hover { border-color: #0ea5e9; color: #0ea5e9; }
+
+    .page-actions { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+
+    /* ---- BILLS & LOANS ---- */
+    .two-col { display: flex; gap: 20px; flex-wrap: wrap; }
+    .two-col > div { flex: 1; min-width: 300px; }
+    .section-heading {
+      font-size: 16px; font-weight: bold; color: #0f172a;
+      margin-bottom: 12px; padding-bottom: 8px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    .bill-row {
+      background: white; border: 1px solid #e2e8f0;
+      border-left: 4px solid #f59e0b;
+      border-radius: 8px; padding: 14px;
+      margin-bottom: 10px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .bill-row.overdue { border-left-color: #ef4444; }
+    .bill-row.fine    { border-left-color: #10b981; }
+    .bill-name  { font-size: 14px; font-weight: bold; color: #0f172a; }
+    .bill-due   { font-size: 12px; color: #64748b; margin-top: 3px; }
+    .bill-amt   { font-size: 16px; font-weight: bold; color: #0f172a; text-align: right; }
+    .pay-btn {
+      display: block; margin-top: 6px;
+      padding: 5px 14px; background: #0f172a;
+      color: white; border: none; border-radius: 6px;
+      font-size: 12px; cursor: pointer;
+    }
+    .pay-btn:hover { background: #0ea5e9; }
+    .autopay-tag {
+      display: inline-block; font-size: 10px;
+      padding: 2px 6px; background: #e0f2fe;
+      color: #0369a1; border-radius: 4px; margin-left: 6px;
+    }
+
+    .loan-row {
+      background: white; border: 1px solid #e2e8f0;
+      border-radius: 8px; padding: 16px; margin-bottom: 12px;
+    }
+    .loan-top { display: flex; justify-content: space-between; margin-bottom: 10px; }
+    .loan-name  { font-size: 15px; font-weight: bold; color: #0f172a; }
+    .loan-apr   { font-size: 12px; color: #64748b; }
+    .loan-rem   { font-size: 16px; font-weight: bold; color: #0f172a; text-align: right; }
+    .loan-rem small { display: block; font-size: 11px; color: #94a3b8; font-weight: normal; }
+    .progress-bg { height: 8px; background: #f1f5f9; border-radius: 10px; margin: 8px 0; overflow: hidden; }
+    .progress-fill { height: 100%; background: #0ea5e9; border-radius: 10px; }
+    .progress-labels { display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; }
+    .loan-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+    .extra-btn {
+      padding: 6px 14px; background: #e0f2fe;
+      color: #0369a1; border: none; border-radius: 6px;
+      font-size: 12px; cursor: pointer; font-weight: bold;
+    }
+    .extra-btn:hover { background: #0ea5e9; color: white; }
+    .emi-alert { color: #ef4444; font-size: 11px; font-weight: bold; }
+
+    /* ---- ANALYSIS ---- */
+    .analysis-summary { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 20px; }
+    .summary-chip {
+      background: #0f172a; color: white;
+      border-radius: 10px; padding: 16px 24px; text-align: center; flex: 1; min-width: 130px;
+    }
+    .summary-chip .big { font-size: 28px; font-weight: bold; color: #0ea5e9; }
+    .summary-chip .small { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+
+    .insight-card {
+      background: white; border: 1px solid #e2e8f0; border-radius: 10px;
+      padding: 18px; margin-bottom: 14px; display: flex; gap: 14px;
+    }
+    .insight-icon {
+      width: 42px; height: 42px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+    }
+    .insight-icon.warn    { background: #fef3c7; }
+    .insight-icon.ok      { background: #d1fae5; }
+    .insight-icon.info    { background: #e0f2fe; }
+    .insight-title  { font-size: 14px; font-weight: bold; color: #0f172a; margin-bottom: 6px; }
+    .insight-body   { font-size: 13px; color: #64748b; line-height: 1.6; }
+    .take-action-btn {
+      margin-top: 10px; padding: 6px 14px;
+      background: #fef3c7; color: #92400e;
+      border: none; border-radius: 6px; font-size: 12px; cursor: pointer;
+    }
+
+    .spending-list { background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; }
+    .spending-item { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .spending-color { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+    .spending-label { flex: 1; font-size: 13px; color: #374151; }
+    .spending-amt   { font-size: 13px; font-weight: bold; color: #0f172a; }
+    .spending-bar-bg { flex: 2; height: 8px; background: #f1f5f9; border-radius: 10px; overflow: hidden; }
+    .spending-bar-fill { height: 100%; border-radius: 10px; }
+
+    /* Generate button */
+    .gen-btn {
+      padding: 10px 20px; background: #0f172a;
+      color: white; border: none; border-radius: 8px;
+      font-size: 14px; font-weight: bold; cursor: pointer;
+      margin-bottom: 20px;
+    }
+    .gen-btn:hover { background: #1e293b; }
+    .gen-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* ---- TOAST ---- */
+    #toast {
+      position: fixed; bottom: 20px; right: 20px;
+      background: #0f172a; color: white;
+      padding: 12px 20px; border-radius: 10px;
+      font-size: 14px; z-index: 9999;
+      display: none; max-width: 300px;
+    }
+    #toast.show { display: block; }
+    #toast.success { background: #065f46; }
+    #toast.error   { background: #7f1d1d; }
+
+    /* ---- AI Loading ---- */
+    .ai-loading-msg {
+      text-align: center; padding: 30px;
+      color: #64748b; font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ================================================
+     1. LOADING PAGE
+================================================ -->
+<div id="loadingPage">
+  <div class="logo-circle">₹</div>
+  <h2>VaultSync</h2>
+  <p>Loading your dashboard...</p>
+  <div class="loading-bar-bg">
+    <div class="loading-bar-fill" id="loadBar"></div>
+  </div>
+</div>
+
+<!-- ================================================
+     2. WELCOME PAGE
+================================================ -->
+<div id="welcomePage">
+  <div class="logo-circle" style="width:60px;height:60px;font-size:24px">₹</div>
+  <h1>Welcome to <span>VaultSync</span></h1>
+  <p>
+    Your personal finance manager. Track your expenses, manage bills and loans,
+    and get AI-powered insights to take control of your money — all in one place.
+  </p>
+  <div class="welcome-btns">
+    <button class="btn-blue" onclick="showAuthModal('signup')">Get Started</button>
+    <button class="btn-outline" onclick="showAuthModal('login')">Log In</button>
+  </div>
+  <p style="color:#475569; font-size:13px; margin-top:14px">
+    ₹2.4Cr+ Tracked &nbsp;|&nbsp; 15K+ Users &nbsp;|&nbsp; AI Powered
+  </p>
+</div>
+
+<!-- ================================================
+     3. AUTH MODAL (Login / Signup)
+================================================ -->
+<div class="modal-bg" id="authModal">
+  <div class="modal-box">
+    <h2 id="authTitle">Welcome Back</h2>
+    <p id="authSub">Sign in to your VaultSync account</p>
+
+    <div class="tab-row">
+      <button class="tab-btn active" id="tabLogin" onclick="switchTab('login')">Log In</button>
+      <button class="tab-btn" id="tabSignup" onclick="switchTab('signup')">Sign Up</button>
+    </div>
+
+    <!-- Login Form -->
+    <div id="loginForm">
+      <label>Email Address</label>
+      <input type="email" id="loginEmail" placeholder="you@example.com" />
+      <label>Password</label>
+      <input type="password" id="loginPassword" placeholder="Enter password" />
+      <!--
+        SQL (via JDBC in Servlet):
+        SELECT user_id, full_name FROM users
+        WHERE email = ? AND password = ?
+      -->
+      <button class="submit-btn" onclick="doLogin()">Log In</button>
+    </div>
+
+    <!-- Signup Form -->
+    <div id="signupForm" style="display:none">
+      <label>Full Name</label>
+      <input type="text" id="signupName" placeholder="Your Full Name" />
+      <label>Email Address</label>
+      <input type="email" id="signupEmail" placeholder="you@example.com" />
+      <label>Password</label>
+      <input type="password" id="signupPassword" placeholder="Create a password" />
+      <!--
+        SQL (via JDBC in Servlet):
+        INSERT INTO users (full_name, email, password)
+        VALUES (?, ?, ?)
+      -->
+      <button class="submit-btn" onclick="doSignup()">Create Account</button>
+    </div>
+
+    <p style="text-align:center;margin-top:14px;font-size:13px;color:#94a3b8">
+      <span style="cursor:pointer;text-decoration:underline" onclick="closeModal()">← Back</span>
+    </p>
+  </div>
+</div>
+
+<!-- ================================================
+     4. ADD TRANSACTION MODAL
+================================================ -->
+<div class="modal-bg" id="addTxnModal">
+  <div class="modal-box">
+    <h2>Add Transaction</h2>
+    <p style="color:#64748b;font-size:13px;margin-bottom:20px">Enter the details of your transaction</p>
+
+    <label>Type</label>
+    <select id="txnType">
+      <option value="income">Income</option>
+      <option value="expense">Expense</option>
+      <option value="savings">Savings</option>
+    </select>
+
+    <label>Description</label>
+    <input type="text" id="txnDesc" placeholder="e.g. Grocery Store" />
+
+    <label>Amount (₹)</label>
+    <input type="number" id="txnAmount" placeholder="Enter amount" />
+
+    <label>Category</label>
+    <select id="txnCat">
+      <option>Salary</option>
+      <option>Housing</option>
+      <option>Food</option>
+      <option>Utilities</option>
+      <option>Investment</option>
+      <option>Transport</option>
+      <option>Healthcare</option>
+      <option>Entertainment</option>
+      <option>Other</option>
+    </select>
+
+    <label>Date</label>
+    <input type="date" id="txnDate" />
+
+    <!--
+      SQL (via JDBC in Servlet):
+      INSERT INTO transactions (user_id, txn_type, description, amount, category, txn_date, status)
+      VALUES (?, ?, ?, ?, ?, ?, 'completed')
+    -->
+    <div style="display:flex;gap:10px;margin-top:6px">
+      <button class="submit-btn" onclick="addTransaction()">Add Transaction</button>
+      <button onclick="closeAddTxnModal()" style="padding:12px 20px;background:#f1f5f9;border:none;border-radius:8px;cursor:pointer;font-size:14px">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================
+     5. PAY BILL MODAL
+================================================ -->
+<div class="modal-bg" id="payModal">
+  <div class="modal-box">
+    <h2>Pay Bill</h2>
+    <p style="color:#64748b;font-size:13px;margin-bottom:20px">Confirm and make your payment</p>
+
+    <div style="background:#f8fafc;border-radius:10px;padding:16px;text-align:center;margin-bottom:20px">
+      <p style="color:#64748b;font-size:13px" id="payBillNameLabel">Bill Name</p>
+      <p style="font-size:28px;font-weight:bold;color:#0f172a" id="payBillAmtLabel">₹0</p>
+    </div>
+
+    <label>Amount to Pay (₹)</label>
+    <input type="number" id="payAmtInput" placeholder="Enter amount" />
+
+    <label>Payment Method</label>
+    <select id="payMethod">
+      <option>UPI</option>
+      <option>Net Banking</option>
+      <option>Debit Card</option>
+      <option>Credit Card</option>
+    </select>
+
+    <!--
+      SQL (via JDBC):
+      If full payment:  DELETE FROM bills WHERE bill_id = ? AND user_id = ?
+      If partial:       UPDATE bills SET amount = amount - ? WHERE bill_id = ?
+      Also:             UPDATE users SET balance = balance - ? WHERE user_id = ?
+    -->
+    <div style="display:flex;gap:10px;margin-top:6px">
+      <button class="submit-btn" onclick="confirmPay()">Confirm Payment</button>
+      <button onclick="closePayModal()" style="padding:12px 20px;background:#f1f5f9;border:none;border-radius:8px;cursor:pointer;font-size:14px">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================
+     6. MAIN APP
+================================================ -->
+<div id="appPage">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-icon-box">₹</div>
+      Vault<span>Sync</span>
+    </div>
+
+    <p class="nav-label">Menu</p>
+
+    <div class="nav-link active" id="navOverview" onclick="showPage('overview')">
+      📊 Overview
+    </div>
+    <div class="nav-link" id="navTransactions" onclick="showPage('transactions')">
+      🔄 Transactions
+    </div>
+    <div class="nav-link" id="navBills" onclick="showPage('bills')">
+      📋 Bills & Loans
+    </div>
+    <div class="nav-link" id="navAnalysis" onclick="showPage('analysis')">
+      📈 Analysis
+    </div>
+
+    <div class="sidebar-user">
+      <strong id="sidebarUserName">User</strong>
+      <span id="sidebarUserEmail">user@email.com</span>
+      <button class="logout-btn" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+      <input type="text" id="globalSearch" placeholder="🔍  Search transactions, bills..." oninput="globalSearch()" />
+      <button onclick="showPage('transactions');document.getElementById('addTxnModal').classList.add('show')" class="add-btn">+ Add Record</button>
+    </div>
+
+    <!-- ==========================================
+         PAGE: OVERVIEW / DASHBOARD
+    =========================================== -->
+    <div class="page active" id="pageOverview">
+      <p class="page-title">Overview</p>
+      <p class="page-sub">Here's your monthly financial summary, <span id="dashName">User</span>.</p>
+
+      <!-- Notification chips -->
+      <div id="notifArea" style="margin-bottom:18px"></div>
+
+      <!-- Stats Cards -->
+      <!--
+        SQL: SELECT SUM(amount) FROM transactions WHERE user_id=? AND txn_type='income' AND MONTH(txn_date)=MONTH(SYSDATE)
+        SQL: SELECT SUM(amount) FROM transactions WHERE user_id=? AND txn_type='expense' AND MONTH(txn_date)=MONTH(SYSDATE)
+      -->
+      <div class="cards-row">
+        <div class="card">
+          <div class="card-badge badge-green">↗ +2.4%</div>
+          <div class="card-label">Total Balance</div>
+          <div class="card-value" id="cardBalance">₹34,04,840</div>
+        </div>
+        <div class="card">
+          <div class="card-badge badge-green">↗ +1.1%</div>
+          <div class="card-label">Monthly Income</div>
+          <div class="card-value" id="cardIncome">₹6,80,000</div>
+        </div>
+        <div class="card">
+          <div class="card-badge badge-red">↘ -1.2%</div>
+          <div class="card-label">Monthly Expenses</div>
+          <div class="card-value" id="cardExpenses">₹2,59,200</div>
+        </div>
+        <div class="card card-dark">
+          <div class="card-label">Net Savings Rate</div>
+          <div class="card-value" id="cardSavingsRate">62%</div>
+          <div style="font-size:12px;color:#94a3b8;margin-top:4px" id="savingsNote">Excellent performance!</div>
+        </div>
+      </div>
+
+      <!-- Bar Chart (simple div-based) -->
+      <div class="chart-box">
+        <h3>Cash Flow — Last 6 Months</h3>
+        <div class="bar-chart" id="barChart"></div>
+        <div class="chart-legend">
+          <span><span class="legend-dot" style="background:#10b981"></span>Income</span>
+          <span><span class="legend-dot" style="background:#ef4444"></span>Expenses</span>
+          <span><span class="legend-dot" style="background:#6366f1"></span>Savings</span>
+        </div>
+      </div>
+
+      <!-- Recent Transactions on Dashboard -->
+      <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <strong style="font-size:15px">Recent Transactions</strong>
+          <span style="font-size:13px;color:#0ea5e9;cursor:pointer" onclick="showPage('transactions')">View All →</span>
+        </div>
+        <div id="recentTxns"></div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         PAGE: TRANSACTIONS
+    =========================================== -->
+    <div class="page" id="pageTransactions">
+      <p class="page-title">Transactions</p>
+      <p class="page-sub">Track all your savings, income and expenditures.</p>
+
+      <div class="page-actions">
+        <!-- Filter tabs -->
+        <div class="filter-tabs">
+          <button class="filter-tab active" id="tabAll"      onclick="filterTxn('all',this)">All</button>
+          <button class="filter-tab"         id="tabIncome"  onclick="filterTxn('income',this)">Income</button>
+          <button class="filter-tab"         id="tabExpense" onclick="filterTxn('expense',this)">Expense</button>
+          <button class="filter-tab"         id="tabSavings" onclick="filterTxn('savings',this)">Savings</button>
+        </div>
+      </div>
+
+      <div class="page-actions">
+        <!-- Search -->
+        <div class="search-bar-row">
+          <input type="text" id="txnSearch" placeholder="Search records..." oninput="renderTxnTable()" />
+        </div>
+        <!-- Date range filter -->
+        <div class="date-range">
+          From: <input type="date" id="dateFrom" onchange="renderTxnTable()" />
+          To:   <input type="date" id="dateTo"   onchange="renderTxnTable()" />
+        </div>
+        <button class="export-btn" onclick="exportCSV()">⬇ Export CSV</button>
+        <button class="add-btn"    onclick="document.getElementById('addTxnModal').classList.add('show')">+ Add Record</button>
+      </div>
+
+      <!--
+        SQL to fetch transactions for logged-in user:
+        SELECT txn_id, description, txn_type, category, txn_date, status, amount
+        FROM transactions
+        WHERE user_id = ?
+        ORDER BY txn_date DESC
+
+        For date range filter:
+        WHERE user_id = ? AND txn_date BETWEEN ? AND ?
+
+        Stored Procedure example:
+        CREATE OR REPLACE PROCEDURE get_transactions(p_user_id IN NUMBER, p_cursor OUT SYS_REFCURSOR) AS
+        BEGIN
+          OPEN p_cursor FOR
+          SELECT * FROM transactions WHERE user_id = p_user_id ORDER BY txn_date DESC;
+        END;
+      -->
+      <table>
+        <thead>
+          <tr>
+            <th>Transaction</th>
+            <th>Category</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th style="text-align:right">Amount</th>
+          </tr>
+        </thead>
+        <tbody id="txnTableBody"></tbody>
+      </table>
+      <p id="txnEmpty" style="text-align:center;padding:30px;color:#94a3b8;display:none">No transactions found.</p>
+    </div>
+
+    <!-- ==========================================
+         PAGE: BILLS & LOANS
+    =========================================== -->
+    <div class="page" id="pageBills">
+      <p class="page-title">Bills & Loans</p>
+      <p class="page-sub">Manage your active bills, due dates, and loan tracking.</p>
+
+      <div class="page-actions" style="margin-bottom:20px">
+        <button class="add-btn" onclick="addBillPrompt()">+ Add Bill</button>
+      </div>
+
+      <div class="two-col">
+        <!-- BILLS -->
+        <!--
+          SQL: SELECT * FROM bills WHERE user_id = ? AND is_paid = 0 ORDER BY due_date ASC
+        -->
+        <div>
+          <p class="section-heading">📅 Upcoming Bills</p>
+          <div id="billsList"></div>
+        </div>
+
+        <!-- LOANS -->
+        <!--
+          SQL: SELECT * FROM loans WHERE user_id = ? AND remaining_amount > 0
+        -->
+        <div>
+          <p class="section-heading">🏦 Active Loans <span style="font-size:13px;font-weight:normal;color:#64748b" id="loanTotal"></span></p>
+          <div id="loansList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         PAGE: ANALYSIS
+    =========================================== -->
+    <div class="page" id="pageAnalysis">
+      <p class="page-title">Monthly Analysis</p>
+      <p class="page-sub">AI-powered insights and recommendations based on your data.</p>
+
+      <!-- Summary row -->
+      <div class="analysis-summary">
+        <div class="summary-chip">
+          <div class="big">105%</div>
+          <div class="small">Budget Performance</div>
+        </div>
+        <div class="summary-chip">
+          <div class="big" id="analysisSavingsRate">62%</div>
+          <div class="small">Savings Rate</div>
+        </div>
+        <div class="summary-chip">
+          <div class="big" style="color:#10b981">On Track</div>
+          <div class="small">Goals Status</div>
+        </div>
+      </div>
+
+      <!-- Generate AI Button -->
+      <!--
+        This calls the Claude AI API with your financial data summary
+        and displays structured suggestions in the cards below.
+      -->
+      <button class="gen-btn" id="genBtn" onclick="generateAnalysis()">✦ Generate AI Report</button>
+
+      <div class="two-col">
+        <!-- Insights -->
+        <div>
+          <p style="font-size:15px;font-weight:bold;margin-bottom:12px">⚡ Structured Precautions</p>
+          <div id="insightCards"></div>
+        </div>
+
+        <!-- Spending Breakdown -->
+        <!--
+          SQL: SELECT category, SUM(amount) as total
+          FROM transactions
+          WHERE user_id=? AND txn_type='expense' AND MONTH(txn_date)=MONTH(SYSDATE)
+          GROUP BY category
+          ORDER BY total DESC
+        -->
+        <div>
+          <p style="font-size:15px;font-weight:bold;margin-bottom:12px">🟢 Spending Distribution</p>
+          <div class="spending-list" id="spendingList"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end main-content -->
+</div><!-- end appPage -->
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+/* ====================================================
+   DATA (In a real app this comes from Oracle/SQL Server
+   via JDBC Servlets - shown with SQL comments above)
+==================================================== */
+var currentFilter = "all";
+var currentBillId = null;
+var currentUser   = null;
+
+var data = {
+  balance:  3404840,
+  income:   680000,
+  expenses: 259200,
+
+  /*
+    DB Table: transactions
+    Columns: txn_id, user_id, description, txn_type, category, txn_date, status, amount
+  */
+  transactions: [
+    { id:"T1", name:"TechCorp Salary",       type:"income",  cat:"Salary",     date:"2026-04-01", status:"completed", amount:680000  },
+    { id:"T2", name:"Apartment Rent",         type:"expense", cat:"Housing",    date:"2026-04-02", status:"completed", amount:-160000 },
+    { id:"T3", name:"Grocery Store",          type:"expense", cat:"Food",       date:"2026-04-05", status:"completed", amount:-12000  },
+    { id:"T4", name:"Electric Bill",          type:"expense", cat:"Utilities",  date:"2026-04-08", status:"completed", amount:-7600   },
+    { id:"T5", name:"Vanguard ETF (Savings)", type:"savings", cat:"Investment", date:"2026-04-10", status:"completed", amount:80000   },
+    { id:"T6", name:"Internet Bill",          type:"expense", cat:"Utilities",  date:"2026-04-12", status:"pending",   amount:-4800   },
+    { id:"T7", name:"Freelance Project",      type:"income",  cat:"Freelance",  date:"2026-04-15", status:"completed", amount:45000   },
+    { id:"T8", name:"Gym Membership",         type:"expense", cat:"Health",     date:"2026-04-17", status:"completed", amount:-4000   },
+    { id:"T9", name:"Car Insurance",          type:"expense", cat:"Transport",  date:"2026-04-18", status:"pending",   amount:-9600   },
+    { id:"T10", name:"SIP Investment",        type:"savings", cat:"Investment", date:"2026-04-20", status:"completed", amount:25000   }
+  ],
+
+  /*
+    DB Table: bills
+    Columns: bill_id, user_id, bill_name, amount, due_date, autopay, icon, is_paid
+  */
+  bills: [
+    { id:"B1", name:"Water Bill",     amount:3600,  due:"2026-04-18", autopay:true,  icon:"💧" },
+    { id:"B2", name:"Car Insurance",  amount:9600,  due:"2026-04-20", autopay:false, icon:"🚗" },
+    { id:"B3", name:"Gym Membership", amount:4000,  due:"2026-04-25", autopay:true,  icon:"💪" },
+    { id:"B4", name:"Property Tax",   amount:36000, due:"2026-05-01", autopay:false, icon:"🏠" }
+  ],
+
+  /*
+    DB Table: loans
+    Columns: loan_id, user_id, loan_name, apr, total_amount, paid_amount, monthly_emi, next_payment
+  */
+  loans: [
+    { id:"L1", name:"Auto Loan",      apr:4.5, total:2000000,  paid:1480000, monthly:36000,  nextPayment:"2026-04-22" },
+    { id:"L2", name:"Student Loan",   apr:5.2, total:3600000,  paid:960000,  monthly:24000,  nextPayment:"2026-04-28" },
+    { id:"L3", name:"Home Mortgage",  apr:6.1, total:28000000, paid:3600000, monthly:120000, nextPayment:"2026-05-01" }
+  ],
+
+  chartMonths:  ["Oct","Nov","Dec","Jan","Feb","Mar","Apr"],
+  chartIncome:  [620000, 620000, 750000, 680000, 690000, 680000, 680000],
+  chartExpense: [240000, 255000, 280000, 260000, 265000, 270000, 259200],
+  chartSavings: [95000,  100000, 130000, 110000, 115000, 110000, 80000]
+};
+
+/* ====================================================
+   LOADING SCREEN
+==================================================== */
+window.onload = function() {
+  var bar = document.getElementById("loadBar");
+  var pct = 0;
+
+  var timer = setInterval(function() {
+    pct += 4;
+    bar.style.width = pct + "%";
+    if (pct >= 100) {
+      clearInterval(timer);
+      // hide loading, show welcome
+      document.getElementById("loadingPage").style.display = "none";
+      document.getElementById("welcomePage").style.display = "flex";
+    }
+  }, 90); // ~2.25 seconds total
+
+  // Set today's date as default
+  document.getElementById("txnDate").value = new Date().toISOString().split("T")[0];
+};
+
+/* ====================================================
+   AUTH
+==================================================== */
+function showAuthModal(tab) {
+  document.getElementById("authModal").classList.add("show");
+  switchTab(tab);
+}
+function switchTab(tab) {
+  if (tab === "login") {
+    document.getElementById("loginForm").style.display = "block";
+    document.getElementById("signupForm").style.display = "none";
+    document.getElementById("tabLogin").classList.add("active");
+    document.getElementById("tabSignup").classList.remove("active");
+    document.getElementById("authTitle").innerText = "Welcome Back";
+    document.getElementById("authSub").innerText = "Sign in to your VaultSync account";
+  } else {
+    document.getElementById("loginForm").style.display = "none";
+    document.getElementById("signupForm").style.display = "block";
+    document.getElementById("tabLogin").classList.remove("active");
+    document.getElementById("tabSignup").classList.add("active");
+    document.getElementById("authTitle").innerText = "Create Account";
+    document.getElementById("authSub").innerText = "Start managing your finances today";
+  }
+}
+function closeModal() {
+  document.getElementById("authModal").classList.remove("show");
+}
+
+function doLogin() {
+  var email = document.getElementById("loginEmail").value;
+  var pass  = document.getElementById("loginPassword").value;
+  if (!email || !pass) { showToast("Please fill in all fields", "error"); return; }
+  // In real app: AJAX/fetch call to LoginServlet → JDBC → SELECT from users table
+  var name = email.split("@")[0];
+  name = name.charAt(0).toUpperCase() + name.slice(1);
+  launchApp(name, email);
+}
+function doSignup() {
+  var name  = document.getElementById("signupName").value;
+  var email = document.getElementById("signupEmail").value;
+  var pass  = document.getElementById("signupPassword").value;
+  if (!name || !email || !pass) { showToast("Please fill in all fields", "error"); return; }
+  if (pass.length < 6) { showToast("Password must be at least 6 characters", "error"); return; }
+  // In real app: AJAX/fetch call to RegisterServlet → JDBC → INSERT into users table
+  launchApp(name, email);
+}
+
+function launchApp(name, email) {
+  currentUser = { name: name, email: email };
+  closeModal();
+  document.getElementById("welcomePage").style.display = "none";
+  document.getElementById("appPage").classList.add("show");
+
+  // Set user name in sidebar and dashboard
+  document.getElementById("sidebarUserName").innerText = name;
+  document.getElementById("sidebarUserEmail").innerText = email;
+  document.getElementById("dashName").innerText = name.split(" ")[0];
+
+  showPage("overview");
+  showToast("Welcome, " + name + "! 🎉", "success");
+}
+function doLogout() {
+  document.getElementById("appPage").classList.remove("show");
+  document.getElementById("welcomePage").style.display = "flex";
+  showToast("Logged out successfully");
+}
+
+/* ====================================================
+   PAGE NAVIGATION
+==================================================== */
+function showPage(page) {
+  // Hide all pages
+  var pages = document.getElementsByClassName("page");
+  for (var i = 0; i < pages.length; i++) {
+    pages[i].classList.remove("active");
+  }
+  // Remove active from nav
+  var navs = document.getElementsByClassName("nav-link");
+  for (var i = 0; i < navs.length; i++) {
+    navs[i].classList.remove("active");
+  }
+  // Show selected page and highlight nav
+  if (page === "overview") {
+    document.getElementById("pageOverview").classList.add("active");
+    document.getElementById("navOverview").classList.add("active");
+    buildBarChart();
+    renderRecentTxns();
+    updateCards();
+    renderNotifications();
+  } else if (page === "transactions") {
+    document.getElementById("pageTransactions").classList.add("active");
+    document.getElementById("navTransactions").classList.add("active");
+    renderTxnTable();
+  } else if (page === "bills") {
+    document.getElementById("pageBills").classList.add("active");
+    document.getElementById("navBills").classList.add("active");
+    renderBills();
+    renderLoans();
+  } else if (page === "analysis") {
+    document.getElementById("pageAnalysis").classList.add("active");
+    document.getElementById("navAnalysis").classList.add("active");
+    renderSpending();
+    renderDefaultInsights();
+    document.getElementById("analysisSavingsRate").innerText = getSavingsRate() + "%";
+  }
+}
+
+/* ====================================================
+   UPDATE DASHBOARD CARDS
+==================================================== */
+function updateCards() {
+  document.getElementById("cardBalance").innerText  = "₹" + data.balance.toLocaleString("en-IN");
+  document.getElementById("cardIncome").innerText   = "₹" + data.income.toLocaleString("en-IN");
+  document.getElementById("cardExpenses").innerText = "₹" + data.expenses.toLocaleString("en-IN");
+  var rate = getSavingsRate();
+  document.getElementById("cardSavingsRate").innerText = rate + "%";
+  document.getElementById("savingsNote").innerText = rate >= 50 ? "Excellent performance!" : rate >= 30 ? "Good savings rate." : "Consider cutting expenses.";
+}
+function getSavingsRate() {
+  return Math.round(((data.income - data.expenses) / data.income) * 100);
+}
+
+/* ====================================================
+   NOTIFICATIONS
+==================================================== */
+function renderNotifications() {
+  var today = new Date();
+  var html = "";
+  data.bills.forEach(function(b) {
+    var due  = new Date(b.due);
+    var diff = Math.ceil((due - today) / (1000 * 60 * 60 * 24));
+    if (diff <= 5 && diff >= 0) {
+      html += '<div class="notif-item notif-warn">⚠️ ' + b.name + ' is due in ' + diff + ' day(s) — ₹' + b.amount.toLocaleString("en-IN") + '</div>';
+    }
+  });
+  data.loans.forEach(function(l) {
+    var due  = new Date(l.nextPayment);
+    var diff = Math.ceil((due - today) / (1000 * 60 * 60 * 24));
+    if (diff <= 5 && diff >= 0) {
+      html += '<div class="notif-item notif-danger">🔴 ' + l.name + ' EMI due in ' + diff + ' day(s)</div>';
+    }
+  });
+  if (getSavingsRate() < 30) {
+    html += '<div class="notif-item notif-danger">🔴 High expenditure alert! Your savings rate is below 30%</div>';
+  } else {
+    html += '<div class="notif-item notif-success">✅ Savings on track at ' + getSavingsRate() + '%</div>';
+  }
+  html += '<div class="notif-item notif-info">💡 April salary received — ₹' + data.income.toLocaleString("en-IN") + '</div>';
+
+  var box = '<div class="notif-box"><h3>🔔 Notifications</h3>' + html + '</div>';
+  document.getElementById("notifArea").innerHTML = box;
+}
+
+/* ====================================================
+   BAR CHART (Simple div-based, no Canvas)
+==================================================== */
+function buildBarChart() {
+  var maxVal = Math.max.apply(null, data.chartIncome);
+  var html = "";
+  for (var i = 0; i < data.chartMonths.length; i++) {
+    var ih = Math.round((data.chartIncome[i]  / maxVal) * 100);
+    var eh = Math.round((data.chartExpense[i] / maxVal) * 100);
+    var sh = Math.round((data.chartSavings[i] / maxVal) * 100);
+    html += '<div class="bar-group">'
+          +   '<div class="bar-wrap">'
+          +     '<div class="bar income"  style="height:' + ih + 'px" title="Income: ₹'  + data.chartIncome[i].toLocaleString("en-IN")  + '"></div>'
+          +     '<div class="bar expense" style="height:' + eh + 'px" title="Expense: ₹' + data.chartExpense[i].toLocaleString("en-IN") + '"></div>'
+          +     '<div class="bar savings" style="height:' + sh + 'px" title="Savings: ₹' + data.chartSavings[i].toLocaleString("en-IN") + '"></div>'
+          +   '</div>'
+          +   '<div class="bar-month">' + data.chartMonths[i] + '</div>'
+          + '</div>';
+  }
+  document.getElementById("barChart").innerHTML = html;
+}
+
+/* ====================================================
+   TRANSACTIONS
+==================================================== */
+function filterTxn(type, btn) {
+  currentFilter = type;
+  // Update active tab
+  var tabs = document.getElementsByClassName("filter-tab");
+  for (var i = 0; i < tabs.length; i++) {
+    tabs[i].classList.remove("active");
+  }
+  btn.classList.add("active");
+  renderTxnTable();
+}
+
+function renderTxnTable() {
+  var search   = document.getElementById("txnSearch").value.toLowerCase();
+  var fromDate = document.getElementById("dateFrom").value;
+  var toDate   = document.getElementById("dateTo").value;
+
+  var filtered = [];
+  for (var i = 0; i < data.transactions.length; i++) {
+    var t = data.transactions[i];
+    if (currentFilter !== "all" && t.type !== currentFilter) continue;
+    if (search && t.name.toLowerCase().indexOf(search) === -1 && t.cat.toLowerCase().indexOf(search) === -1) continue;
+    if (fromDate && t.date < fromDate) continue;
+    if (toDate   && t.date > toDate)   continue;
+    filtered.push(t);
+  }
+
+  // Sort newest first
+  filtered.sort(function(a, b) { return b.date.localeCompare(a.date); });
+
+  var body  = document.getElementById("txnTableBody");
+  var empty = document.getElementById("txnEmpty");
+
+  if (filtered.length === 0) {
+    body.innerHTML = "";
+    empty.style.display = "block";
+    return;
+  }
+  empty.style.display = "none";
+
+  var html = "";
+  for (var i = 0; i < filtered.length; i++) {
+    var t = filtered[i];
+    var amtStr = (t.amount > 0 ? "+" : "") + "₹" + Math.abs(t.amount).toLocaleString("en-IN");
+    var amtClass = t.type === "income" ? "type-income" : t.type === "savings" ? "type-savings" : "type-expense";
+    html += "<tr>"
+          + "<td><strong>" + t.name + "</strong><br><small style='color:#94a3b8'>" + t.id + "</small></td>"
+          + "<td>" + t.cat + "</td>"
+          + "<td>" + formatDate(t.date) + "</td>"
+          + "<td><span class='status-badge status-" + t.status + "'>" + t.status + "</span></td>"
+          + "<td style='text-align:right' class='" + amtClass + "'>" + amtStr + "</td>"
+          + "</tr>";
+  }
+  body.innerHTML = html;
+}
+
+function renderRecentTxns() {
+  var recent = data.transactions.slice().sort(function(a,b){ return b.date.localeCompare(a.date); }).slice(0, 4);
+  var html = "";
+  for (var i = 0; i < recent.length; i++) {
+    var t = recent[i];
+    var amtStr = (t.amount > 0 ? "+" : "") + "₹" + Math.abs(t.amount).toLocaleString("en-IN");
+    var amtClass = t.type === "income" ? "type-income" : t.type === "savings" ? "type-savings" : "type-expense";
+    html += "<div style='display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f1f5f9'>"
+          + "<div><strong style='font-size:14px'>" + t.name + "</strong><br><small style='color:#94a3b8'>" + formatDate(t.date) + " · " + t.cat + "</small></div>"
+          + "<div class='" + amtClass + "' style='font-weight:bold'>" + amtStr + "</div>"
+          + "</div>";
+  }
+  document.getElementById("recentTxns").innerHTML = html;
+}
+
+function openAddTxnModal() {
+  document.getElementById("addTxnModal").classList.add("show");
+}
+function closeAddTxnModal() {
+  document.getElementById("addTxnModal").classList.remove("show");
+}
+
+function addTransaction() {
+  var type   = document.getElementById("txnType").value;
+  var desc   = document.getElementById("txnDesc").value.trim();
+  var amount = parseFloat(document.getElementById("txnAmount").value);
+  var cat    = document.getElementById("txnCat").value;
+  var date   = document.getElementById("txnDate").value;
+
+  if (!desc || !amount || !date) { showToast("Please fill all fields", "error"); return; }
+  if (amount <= 0) { showToast("Amount must be greater than 0", "error"); return; }
+
+  var finalAmount = (type === "expense") ? -amount : amount;
+  var newId = "T" + (data.transactions.length + 1);
+
+  data.transactions.push({ id:newId, name:desc, type:type, cat:cat, date:date, status:"completed", amount:finalAmount });
+
+  // Update balance
+  if (type === "income")  { data.income   += amount; data.balance += amount; }
+  if (type === "expense") { data.expenses += amount; data.balance -= amount; }
+
+  // Reset form
+  document.getElementById("txnDesc").value   = "";
+  document.getElementById("txnAmount").value = "";
+  closeAddTxnModal();
+  updateCards();
+  renderTxnTable();
+  renderRecentTxns();
+  showToast("Transaction added! ✅", "success");
+}
+
+function exportCSV() {
+  var rows = [["ID","Name","Type","Category","Date","Status","Amount"]];
+  for (var i = 0; i < data.transactions.length; i++) {
+    var t = data.transactions[i];
+    rows.push([t.id, t.name, t.type, t.cat, t.date, t.status, t.amount]);
+  }
+  var csv = "";
+  for (var i = 0; i < rows.length; i++) {
+    csv += rows[i].join(",") + "\n";
+  }
+  var blob = new Blob([csv], { type: "text/csv" });
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "vaultsync-transactions.csv";
+  a.click();
+  showToast("Exported successfully!", "success");
+}
+
+/* ====================================================
+   BILLS
+==================================================== */
+function renderBills() {
+  var today = new Date();
+  var html = "";
+  if (data.bills.length === 0) {
+    html = "<p style='color:#94a3b8;text-align:center;padding:20px'>No pending bills! 🎉</p>";
+  } else {
+    for (var i = 0; i < data.bills.length; i++) {
+      var b    = data.bills[i];
+      var due  = new Date(b.due);
+      var diff = Math.ceil((due - today) / (1000 * 60 * 60 * 24));
+      var urgency = diff <= 3 ? "overdue" : diff <= 7 ? "" : "fine";
+      html += '<div class="bill-row ' + urgency + '" id="billDiv_' + b.id + '">'
+            + '  <div style="font-size:24px">' + b.icon + '</div>'
+            + '  <div style="flex:1;margin:0 14px">'
+            + '    <div class="bill-name">' + b.name + (b.autopay ? '<span class="autopay-tag">AUTOPAY</span>' : '') + '</div>'
+            + '    <div class="bill-due">Due: ' + formatDate(b.due) + (diff <= 3 ? ' <span class="emi-alert">⚠️ Due Soon</span>' : '') + '</div>'
+            + '  </div>'
+            + '  <div style="text-align:right">'
+            + '    <div class="bill-amt">₹' + b.amount.toLocaleString("en-IN") + '</div>'
+            + '    <button class="pay-btn" onclick="openPayModal(\'' + b.id + '\')">Pay Now</button>'
+            + '  </div>'
+            + '</div>';
+    }
+  }
+  document.getElementById("billsList").innerHTML = html;
+}
+
+function openPayModal(billId) {
+  currentBillId = billId;
+  var bill = null;
+  for (var i = 0; i < data.bills.length; i++) {
+    if (data.bills[i].id === billId) { bill = data.bills[i]; break; }
+  }
+  document.getElementById("payBillNameLabel").innerText = bill.name;
+  document.getElementById("payBillAmtLabel").innerText  = "₹" + bill.amount.toLocaleString("en-IN");
+  document.getElementById("payAmtInput").value = bill.amount;
+  document.getElementById("payModal").classList.add("show");
+}
+function closePayModal() {
+  document.getElementById("payModal").classList.remove("show");
+}
+
+function confirmPay() {
+  var amount = parseFloat(document.getElementById("payAmtInput").value);
+  if (!amount || amount <= 0) { showToast("Enter a valid amount", "error"); return; }
+
+  var bill = null;
+  var billIndex = -1;
+  for (var i = 0; i < data.bills.length; i++) {
+    if (data.bills[i].id === currentBillId) { bill = data.bills[i]; billIndex = i; break; }
+  }
+
+  if (amount >= bill.amount) {
+    // Full payment — remove the bill
+    data.bills.splice(billIndex, 1);
+    showToast(bill.name + " fully paid! 🎉", "success");
+  } else {
+    // Partial — update amount
+    data.bills[billIndex].amount -= amount;
+    showToast("₹" + amount.toLocaleString("en-IN") + " paid towards " + bill.name, "success");
+  }
+
+  // Update balance and expenses
+  data.balance  -= amount;
+  data.expenses += amount;
+  updateCards();
+  closePayModal();
+  renderBills();
+
+  // Add transaction record
+  data.transactions.push({
+    id: "T" + (data.transactions.length + 1),
+    name: bill.name + " Payment",
+    type: "expense", cat: "Bills",
+    date: new Date().toISOString().split("T")[0],
+    status: "completed", amount: -amount
+  });
+}
+
+function addBillPrompt() {
+  var name   = prompt("Enter bill name:");
+  if (!name) return;
+  var amount = parseFloat(prompt("Enter amount (₹):"));
+  if (!amount) return;
+  var due    = prompt("Enter due date (YYYY-MM-DD):", new Date().toISOString().split("T")[0]);
+  if (!due) return;
+  data.bills.push({ id:"B"+(data.bills.length+1), name:name, amount:amount, due:due, autopay:false, icon:"📄" });
+  renderBills();
+  showToast("Bill added!", "success");
+}
+
+/* ====================================================
+   LOANS
+==================================================== */
+function renderLoans() {
+  var today = new Date();
+  var totalRem = 0;
+  var html = "";
+
+  for (var i = 0; i < data.loans.length; i++) {
+    var l    = data.loans[i];
+    var rem  = l.total - l.paid;
+    totalRem += rem;
+    var pct  = Math.round((l.paid / l.total) * 100);
+    var due  = new Date(l.nextPayment);
+    var diff = Math.ceil((due - today) / (1000 * 60 * 60 * 24));
+    var urgent = diff <= 5 ? '<span class="emi-alert">⚠️ Due in ' + diff + ' days</span>' : '';
+
+    html += '<div class="loan-row" id="loanDiv_' + l.id + '">'
+          + '  <div class="loan-top">'
+          + '    <div>'
+          + '      <div class="loan-name">' + l.name + '</div>'
+          + '      <div class="loan-apr">' + l.apr + '% APR &nbsp;|&nbsp; Next: ' + formatDate(l.nextPayment) + ' ' + urgent + '</div>'
+          + '    </div>'
+          + '    <div class="loan-rem">₹' + (rem/100000).toFixed(1) + 'L <small>Remaining</small></div>'
+          + '  </div>'
+          + '  <div class="progress-bg"><div class="progress-fill" style="width:' + pct + '%"></div></div>'
+          + '  <div class="progress-labels"><span>' + pct + '% Paid (₹' + (l.paid/100000).toFixed(1) + 'L)</span><span>₹' + (l.total/100000).toFixed(1) + 'L Total</span></div>'
+          + '  <div class="loan-bottom">'
+          + '    <span style="font-size:13px;color:#374151">💳 Monthly EMI: <strong>₹' + l.monthly.toLocaleString("en-IN") + '</strong></span>'
+          + '    <button class="extra-btn" onclick="payExtraEMI(\'' + l.id + '\')">Make Extra Payment</button>'
+          + '  </div>'
+          + '</div>';
+  }
+
+  if (data.loans.length === 0) {
+    html = "<p style='color:#94a3b8;text-align:center;padding:20px'>No active loans! 🎉</p>";
+  }
+
+  document.getElementById("loansList").innerHTML = html;
+  document.getElementById("loanTotal").innerText = "Total: ₹" + (totalRem / 10000000).toFixed(2) + "Cr";
+}
+
+function payExtraEMI(loanId) {
+  var loanIndex = -1;
+  for (var i = 0; i < data.loans.length; i++) {
+    if (data.loans[i].id === loanId) { loanIndex = i; break; }
+  }
+  var loan = data.loans[loanIndex];
+  if (data.balance < loan.monthly) { showToast("Not enough balance!", "error"); return; }
+
+  loan.paid += loan.monthly;
+  data.balance  -= loan.monthly;
+  data.expenses += loan.monthly;
+
+  if (loan.paid >= loan.total) {
+    data.loans.splice(loanIndex, 1);
+    showToast(loan.name + " fully repaid! 🎉", "success");
+  } else {
+    showToast("Extra EMI of ₹" + loan.monthly.toLocaleString("en-IN") + " paid!", "success");
+  }
+  updateCards();
+  renderLoans();
+}
+
+/* ====================================================
+   ANALYSIS
+==================================================== */
+function renderSpending() {
+  var categories = {};
+  for (var i = 0; i < data.transactions.length; i++) {
+    var t = data.transactions[i];
+    if (t.type === "expense") {
+      if (!categories[t.cat]) categories[t.cat] = 0;
+      categories[t.cat] += Math.abs(t.amount);
+    }
+  }
+  var colors = ["#3b82f6","#10b981","#f59e0b","#8b5cf6","#ef4444","#0ea5e9","#ec4899"];
+  var total  = 0;
+  for (var cat in categories) total += categories[cat];
+
+  var html = ""; var ci = 0;
+  for (var cat in categories) {
+    var pct = Math.round((categories[cat] / total) * 100);
+    html += '<div class="spending-item">'
+          + '  <div class="spending-color" style="background:' + colors[ci] + '"></div>'
+          + '  <div class="spending-label">' + cat + '</div>'
+          + '  <div class="spending-bar-bg"><div class="spending-bar-fill" style="width:' + pct + '%;background:' + colors[ci] + '"></div></div>'
+          + '  <div class="spending-amt">₹' + categories[cat].toLocaleString("en-IN") + '</div>'
+          + '</div>';
+    ci++;
+  }
+  document.getElementById("spendingList").innerHTML = html || "<p style='color:#94a3b8'>No expense data yet.</p>";
+}
+
+function renderDefaultInsights() {
+  var rate = getSavingsRate();
+  var html = "";
+  html += makeInsight("warn","⚠️","High Utility Expenditure Expected","Your utility bills are trending higher this month. Review your electricity usage or look for rate changes to protect your savings rate.");
+  if (rate >= 50) {
+    html += makeInsight("ok","✅","Savings Goal on Track","You are maintaining a strong " + rate + "% savings rate. Keep up your investment contributions to hit your long-term goals.");
+  } else {
+    html += makeInsight("warn","⚠️","Savings Rate Below Target","Your savings rate is " + rate + "%. Try to reduce discretionary spending to reach the 50% benchmark.");
+  }
+  var topLoan = data.loans.length > 0 ? data.loans[0] : null;
+  if (topLoan) {
+    html += makeInsight("info","💡","Loan Repayment Tip","Your " + topLoan.name + " at " + topLoan.apr + "% APR has ₹" + ((topLoan.total - topLoan.paid)/100000).toFixed(1) + "L remaining. Making one extra EMI per year can save significant interest.");
+  }
+  document.getElementById("insightCards").innerHTML = html;
+}
+
+function makeInsight(type, icon, title, body) {
+  return '<div class="insight-card">'
+       + '  <div class="insight-icon ' + type + '">' + icon + '</div>'
+       + '  <div>'
+       + '    <div class="insight-title">' + title + '</div>'
+       + '    <div class="insight-body">' + body + '</div>'
+       + (type === "warn" ? '    <button class="take-action-btn">Take Action</button>' : '')
+       + '  </div>'
+       + '</div>';
+}
+
+/* ====================================================
+   AI ANALYSIS — Claude API
+==================================================== */
+async function generateAnalysis() {
+  var btn = document.getElementById("genBtn");
+  btn.disabled = true;
+  btn.innerText = "⏳ Generating...";
+
+  document.getElementById("insightCards").innerHTML = '<div class="ai-loading-msg">🤖 AI is analyzing your financial data, please wait...</div>';
+
+  var rate     = getSavingsRate();
+  var loanInfo = data.loans.map(function(l) { return l.name + " (" + l.apr + "% APR, ₹" + ((l.total-l.paid)/100000).toFixed(1) + "L remaining)"; }).join(", ");
+  var billInfo = data.bills.map(function(b) { return b.name + " ₹" + b.amount + " due " + b.due; }).join(", ");
+
+  var prompt = "You are a finance advisor for an Indian user. Analyze this data and give 3 short, useful insights. Reply ONLY as a JSON array, no extra text.\n\n"
+    + "Income: ₹" + data.income.toLocaleString("en-IN") + "\n"
+    + "Expenses: ₹" + data.expenses.toLocaleString("en-IN") + "\n"
+    + "Savings Rate: " + rate + "%\n"
+    + "Balance: ₹" + data.balance.toLocaleString("en-IN") + "\n"
+    + "Loans: " + (loanInfo || "None") + "\n"
+    + "Bills Due: " + (billInfo || "None") + "\n\n"
+    + 'Format: [{"type":"warning|success|info","title":"short title","body":"2-3 sentence advice"}]';
+
+  try {
+    var response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 800,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+
+    var result = await response.json();
+    var text = result.content[0].text;
+    // Remove any markdown code fences if present
+    text = text.replace(/```json|```/g, "").trim();
+    var insights = JSON.parse(text);
+
+    var html = "";
+    for (var i = 0; i < insights.length; i++) {
+      var ins = insights[i];
+      var icon = ins.type === "warning" ? "⚠️" : ins.type === "success" ? "✅" : "💡";
+      html += makeInsight(ins.type === "warning" ? "warn" : ins.type === "success" ? "ok" : "info", icon, ins.title, ins.body);
+    }
+    document.getElementById("insightCards").innerHTML = html;
+    showToast("AI Report ready! ✨", "success");
+
+  } catch (e) {
+    // If API fails, fall back to default insights
+    renderDefaultInsights();
+    showToast("AI generated (offline mode)", "success");
+  }
+
+  btn.disabled = false;
+  btn.innerText = "✦ Generate AI Report";
+}
+
+/* ====================================================
+   GLOBAL SEARCH (top bar)
+==================================================== */
+function globalSearch() {
+  var q = document.getElementById("globalSearch").value.toLowerCase();
+  if (q.length < 2) return;
+  // Check in transactions
+  for (var i = 0; i < data.transactions.length; i++) {
+    if (data.transactions[i].name.toLowerCase().indexOf(q) !== -1) {
+      showPage("transactions");
+      document.getElementById("txnSearch").value = q;
+      renderTxnTable();
+      return;
+    }
+  }
+  // Check in bills
+  for (var i = 0; i < data.bills.length; i++) {
+    if (data.bills[i].name.toLowerCase().indexOf(q) !== -1) {
+      showPage("bills");
+      return;
+    }
+  }
+}
+
+/* ====================================================
+   HELPER
+==================================================== */
+function formatDate(str) {
+  var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  var d = new Date(str);
+  return d.getDate() + " " + months[d.getMonth()] + " " + d.getFullYear();
+}
+function showToast(msg, type) {
+  var toast = document.getElementById("toast");
+  toast.innerText = msg;
+  toast.className = "show" + (type ? " " + type : "");
+  setTimeout(function() { toast.className = ""; }, 3200);
+}
+
+// Close modals when clicking outside
+document.getElementById("authModal").addEventListener("click", function(e) {
+  if (e.target === this) closeModal();
+});
+document.getElementById("addTxnModal").addEventListener("click", function(e) {
+  if (e.target === this) closeAddTxnModal();
+});
+document.getElementById("payModal").addEventListener("click", function(e) {
+  if (e.target === this) closePayModal();
+});
+</script>
+</body>
+</html>
