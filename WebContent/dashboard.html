@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VaultSync — Dashboard</title>
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ======= SIDEBAR ======= -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">₹</div>
+      <span class="logo-text">VaultSync</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <p class="nav-section-label">MENU</p>
+      <ul>
+        <li>
+          <a href="#" class="nav-item active" onclick="switchPage('overview', this)">
+            <span class="nav-icon">⊞</span> Overview
+          </a>
+        </li>
+        <li>
+          <a href="#" class="nav-item" onclick="switchPage('transactions', this)">
+            <span class="nav-icon">⇄</span> Transactions
+          </a>
+        </li>
+        <li>
+          <a href="#" class="nav-item" onclick="switchPage('bills', this)">
+            <span class="nav-icon">☰</span> Bills &amp; Loans
+          </a>
+        </li>
+        <li>
+          <a href="#" class="nav-item" onclick="switchPage('analysis', this)">
+            <span class="nav-icon">⌒</span> Analysis
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="user-avatar" id="userAvatar">AJ</div>
+      <div class="user-info">
+        <span class="user-name" id="sidebarName">Alex Johnson</span>
+        <span class="user-plan">Pro Account</span>
+      </div>
+      <button class="logout-btn" onclick="handleLogout()" title="Logout">⇥</button>
+    </div>
+  </aside>
+
+  <!-- ======= MAIN CONTENT ======= -->
+  <main class="main-content">
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Search transactions, bills..." />
+      </div>
+      <div class="topbar-right">
+        <button class="notif-btn" onclick="toggleNotifications()">
+          🔔
+          <span class="notif-badge">2</span>
+        </button>
+        <!-- Notifications Dropdown -->
+        <div class="notif-dropdown" id="notifDropdown">
+          <p class="notif-title">Notifications</p>
+          <div class="notif-item">
+            <span class="notif-dot orange"></span>
+            <div>
+              <p>Utility bill due in 3 days</p>
+              <span>1 hour ago</span>
+            </div>
+          </div>
+          <div class="notif-item">
+            <span class="notif-dot green"></span>
+            <div>
+              <p>Savings goal milestone reached!</p>
+              <span>Yesterday</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ======== PAGE: OVERVIEW ======== -->
+    <section class="page active-page" id="page-overview">
+      <div class="page-header">
+        <div>
+          <h1>Overview</h1>
+          <p class="page-sub">Here's your monthly financial summary, <span id="welcomeName">Alex</span>.</p>
+        </div>
+        <div class="header-actions">
+          <div class="month-badge">April 2026</div>
+          <button class="btn-report" onclick="generateReport()">📈 Generate Report</button>
+        </div>
+      </div>
+
+      <!-- STAT CARDS -->
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-icon blue">💳</div>
+            <span class="stat-badge green-badge">↗ +2.4%</span>
+          </div>
+          <p class="stat-label">Total Balance</p>
+          <h2 class="stat-value" id="totalBalance">₹3,404,840</h2>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-icon green">〰</div>
+            <span class="stat-badge green-badge"></span>
+          </div>
+          <p class="stat-label">Monthly Income</p>
+          <h2 class="stat-value" id="monthlyIncome">₹680,000</h2>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-icon red">💳</div>
+            <span class="stat-badge red-badge">↘ -1.2%</span>
+          </div>
+          <p class="stat-label">Monthly Expenses</p>
+          <h2 class="stat-value" id="monthlyExpenses">₹259,200</h2>
+        </div>
+
+        <div class="stat-card dark-card">
+          <div class="stat-card-top">
+            <div class="stat-icon white">↗</div>
+          </div>
+          <p class="stat-label light">Net Savings Rate</p>
+          <h2 class="stat-value big" id="savingsRate">62%</h2>
+          <p class="stat-note">Excellent performance this month.</p>
+        </div>
+      </div>
+
+      <!-- BOTTOM ROW -->
+      <div class="dashboard-row">
+        <!-- CASH FLOW CHART -->
+        <div class="card cashflow-card">
+          <div class="card-header">
+            <div>
+              <h3>Cash Flow Statistics</h3>
+              <p class="card-sub">Average vs. actuals over 6 months</p>
+            </div>
+            <select class="period-select" onchange="updateChart(this.value)">
+              <option value="6">Last 6 months</option>
+              <option value="3">Last 3 months</option>
+              <option value="12">Last 12 months</option>
+            </select>
+          </div>
+
+          <div class="cashflow-stats">
+            <div class="cf-stat">
+              <span class="cf-label">AVG. INCOME</span>
+              <span class="cf-value green">₹684,571</span>
+            </div>
+            <div class="cf-stat">
+              <span class="cf-label">AVG. EXPENSE</span>
+              <span class="cf-value red">₹266,743</span>
+            </div>
+            <div class="cf-stat">
+              <span class="cf-label">AVG. SAVINGS</span>
+              <span class="cf-value">₹114,286</span>
+            </div>
+          </div>
+
+          <!-- SVG Chart -->
+          <div class="chart-wrap">
+            <canvas id="cashflowChart" width="600" height="200"></canvas>
+          </div>
+        </div>
+
+        <!-- AI ANALYST -->
+        <div class="card ai-card">
+          <div class="card-header">
+            <div>
+              <h3>AI Analyst</h3>
+              <p class="card-sub">Recent insights &amp; precautions</p>
+            </div>
+          </div>
+          <div class="insight-list" id="insightList">
+            <div class="insight-item">
+              <span class="insight-dot orange"></span>
+              <div class="insight-body">
+                <h4>High Utility Expenditure Expected</h4>
+                <p>Your utility bills are trending 15% higher this month compared to the last 6 months average. Consider reviewing your subscriptions.</p>
+              </div>
+            </div>
+            <div class="insight-item">
+              <span class="insight-dot green"></span>
+              <div class="insight-body">
+                <h4>Savings Goal on Track</h4>
+                <p>You have consistently contributed to your Vanguard ETF over the last 3 months. You are on pace to hit your annual goal.</p>
+              </div>
+            </div>
+            <div class="insight-item">
+              <span class="insight-dot blue"></span>
+              <div class="insight-body">
+                <h4>Low Expense Month Detected</h4>
+                <p>This month's expenses are below your 6-month average. A great time to increase your emergency fund contribution.</p>
+              </div>
+            </div>
+          </div>
+          <button class="btn-refresh-insight" onclick="refreshInsights()">↻ Refresh Insights</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======== PAGE: TRANSACTIONS ======== -->
+    <section class="page" id="page-transactions">
+      <div class="page-header">
+        <div>
+          <h1>Transactions</h1>
+          <p class="page-sub">All your financial movements in one place.</p>
+        </div>
+        <button class="btn-report" onclick="showAddTransaction()">+ Add Transaction</button>
+      </div>
+
+      <!-- Add Transaction Modal Trigger -->
+      <div class="card" style="margin-bottom:20px; padding:20px;">
+        <div class="quick-add-row">
+          <input type="text"   id="txDesc"   placeholder="Description (e.g. Grocery)"  class="tx-input" />
+          <input type="number" id="txAmount" placeholder="Amount (₹)"                  class="tx-input" />
+          <select id="txType" class="tx-input">
+            <option value="income">Income</option>
+            <option value="expense">Expense</option>
+          </select>
+          <input type="date"   id="txDate"   class="tx-input" />
+          <button class="btn-report" onclick="addTransaction()">Add</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <table class="data-table" id="txTable">
+          <thead>
+            <tr>
+              <th>Date</th><th>Description</th><th>Type</th><th>Amount</th><th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="txBody">
+            <tr><td colspan="5" class="empty-row">No transactions yet. Add one above!</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ======== PAGE: BILLS & LOANS ======== -->
+    <section class="page" id="page-bills">
+      <div class="page-header">
+        <div>
+          <h1>Bills &amp; Loans</h1>
+          <p class="page-sub">Stay ahead of your recurring commitments.</p>
+        </div>
+        <button class="btn-report" onclick="showAddBill()">+ Add Bill/Loan</button>
+      </div>
+
+      <div class="card" style="margin-bottom:20px; padding:20px;">
+        <div class="quick-add-row">
+          <input type="text"   id="billName"   placeholder="Bill name (e.g. Rent)"   class="tx-input" />
+          <input type="number" id="billAmount" placeholder="Amount (₹)"              class="tx-input" />
+          <select id="billType" class="tx-input">
+            <option value="bill">Bill</option>
+            <option value="loan">Loan</option>
+          </select>
+          <input type="date" id="billDue" class="tx-input" />
+          <button class="btn-report" onclick="addBill()">Add</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <table class="data-table" id="billTable">
+          <thead>
+            <tr>
+              <th>Name</th><th>Type</th><th>Amount</th><th>Due Date</th><th>Status</th><th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="billBody">
+            <tr><td colspan="6" class="empty-row">No bills or loans added yet.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ======== PAGE: ANALYSIS ======== -->
+    <section class="page" id="page-analysis">
+      <div class="page-header">
+        <div>
+          <h1>Analysis</h1>
+          <p class="page-sub">Understand your financial health at a glance.</p>
+        </div>
+      </div>
+
+      <div class="analysis-grid">
+        <div class="card analysis-card">
+          <h3>Income vs Expenses</h3>
+          <canvas id="incomeExpenseChart" width="400" height="250"></canvas>
+        </div>
+        <div class="card analysis-card">
+          <h3>Spending Breakdown</h3>
+          <canvas id="spendingChart" width="400" height="250"></canvas>
+        </div>
+        <div class="card analysis-card full-width">
+          <h3>Monthly Trend (₹)</h3>
+          <canvas id="trendChart" width="800" height="200"></canvas>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ======= SETUP MODAL (shown on first login) ======= -->
+  <div class="modal-overlay" id="setupModal" style="display:none;">
+    <div class="modal-box">
+      <h2>Welcome to VaultSync! 🎉</h2>
+      <p>Let's set up your financial profile. Enter your current balances to get started.</p>
+      <div class="form-group">
+        <label>Current Total Balance (₹)</label>
+        <input type="number" id="setupBalance" placeholder="e.g. 3404840" />
+      </div>
+      <div class="form-group">
+        <label>Monthly Income (₹)</label>
+        <input type="number" id="setupIncome" placeholder="e.g. 680000" />
+      </div>
+      <div class="form-group">
+        <label>Monthly Expense Budget (₹)</label>
+        <input type="number" id="setupExpense" placeholder="e.g. 259200" />
+      </div>
+      <button class="btn-submit" onclick="saveSetup()">Save &amp; Launch Dashboard</button>
+    </div>
+  </div>
+
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

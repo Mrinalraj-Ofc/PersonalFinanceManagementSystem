@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VaultSync — Personal Finance Management</title>
+  <link rel="stylesheet" href="css/landing.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ======= NAVBAR ======= -->
+  <nav class="navbar">
+    <div class="nav-logo">
+      <div class="logo-icon">₹</div>
+      <span class="logo-text">VaultSync</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#" onclick="showForm('login')" class="btn-nav-login">Login</a></li>
+      <li><a href="#" onclick="showForm('signup')" class="btn-nav-signup">Get Started</a></li>
+    </ul>
+  </nav>
+
+  <!-- ======= HERO SECTION ======= -->
+  <section class="hero">
+    <div class="hero-bg-orb orb-1"></div>
+    <div class="hero-bg-orb orb-2"></div>
+    <div class="hero-bg-orb orb-3"></div>
+
+    <div class="hero-content">
+      <div class="hero-left">
+        <div class="hero-badge">
+          <span class="badge-dot"></span>
+          Smart Finance · AI Powered
+        </div>
+        <h1 class="hero-title">
+          Your Money.<br />
+          <span class="highlight">Your Control.</span>
+        </h1>
+        <p class="hero-subtitle">
+          VaultSync brings your income, expenses, savings, and loans into one
+          beautiful dashboard. Track every rupee. Plan every goal.
+        </p>
+
+        <!-- STAT PILLS -->
+        <div class="stat-pills">
+          <div class="pill">
+            <span class="pill-value">₹3.4M+</span>
+            <span class="pill-label">Assets Tracked</span>
+          </div>
+          <div class="pill-divider"></div>
+          <div class="pill">
+            <span class="pill-value">62%</span>
+            <span class="pill-label">Avg Savings Rate</span>
+          </div>
+          <div class="pill-divider"></div>
+          <div class="pill">
+            <span class="pill-value">100%</span>
+            <span class="pill-label">Secure & Private</span>
+          </div>
+        </div>
+
+        <!-- FEATURE CHIPS -->
+        <div class="feature-chips" id="features">
+          <div class="chip">📊 Cash Flow Analytics</div>
+          <div class="chip">🤖 AI Analyst Insights</div>
+          <div class="chip">📋 Bills & Loans Tracker</div>
+          <div class="chip">📈 Net Savings Monitor</div>
+        </div>
+      </div>
+
+      <!-- ======= AUTH CARD ======= -->
+      <div class="hero-right">
+        <div class="auth-card">
+          <!-- TAB SWITCHER -->
+          <div class="auth-tabs">
+            <button class="tab-btn active" id="tab-login" onclick="showForm('login')">Login</button>
+            <button class="tab-btn" id="tab-signup" onclick="showForm('signup')">Sign Up</button>
+          </div>
+
+          <!-- ALERT BOX -->
+          <div class="alert-box" id="alertBox" style="display:none;"></div>
+
+          <!-- LOGIN FORM -->
+          <form id="loginForm" class="auth-form active-form" onsubmit="handleLogin(event)">
+            <div class="form-group">
+              <label>Email Address</label>
+              <input type="email" id="loginEmail" placeholder="alex@example.com" required />
+            </div>
+            <div class="form-group">
+              <label>Password</label>
+              <input type="password" id="loginPassword" placeholder="Enter your password" required />
+            </div>
+            <div class="form-row-small">
+              <label class="checkbox-label">
+                <input type="checkbox" /> Remember me
+              </label>
+              <a href="#" class="forgot-link">Forgot password?</a>
+            </div>
+            <button type="submit" class="btn-submit" id="loginBtn">
+              <span class="btn-text">Sign In to VaultSync</span>
+              <span class="btn-loader" style="display:none;">Signing in...</span>
+            </button>
+            <p class="form-switch">
+              Don't have an account?
+              <a href="#" onclick="showForm('signup')">Create one →</a>
+            </p>
+          </form>
+
+          <!-- SIGNUP FORM -->
+          <form id="signupForm" class="auth-form" style="display:none;" onsubmit="handleSignup(event)">
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" id="signupName" placeholder="Alex Johnson" required />
+            </div>
+            <div class="form-row-two">
+              <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="signupUsername" placeholder="alexj" required />
+              </div>
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="signupEmail" placeholder="alex@email.com" required />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Password</label>
+              <input type="password" id="signupPassword" placeholder="Min. 6 characters" required minlength="6" />
+            </div>
+            <div class="form-group">
+              <label>Confirm Password</label>
+              <input type="password" id="signupConfirm" placeholder="Repeat password" required />
+            </div>
+            <button type="submit" class="btn-submit" id="signupBtn">
+              <span class="btn-text">Create My Account</span>
+              <span class="btn-loader" style="display:none;">Creating account...</span>
+            </button>
+            <p class="form-switch">
+              Already have an account?
+              <a href="#" onclick="showForm('login')">Sign in →</a>
+            </p>
+          </form>
+        </div>
+
+        <!-- FLOATING MINI CARD (decorative) -->
+        <div class="floating-card card-top">
+          <div class="fc-icon green">↑</div>
+          <div>
+            <div class="fc-label">Monthly Income</div>
+            <div class="fc-value">₹6,80,000</div>
+          </div>
+        </div>
+        <div class="floating-card card-bottom">
+          <div class="fc-icon teal">✦</div>
+          <div>
+            <div class="fc-label">Net Savings Rate</div>
+            <div class="fc-value">62%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= ABOUT SECTION ======= -->
+  <section class="about-section" id="about">
+    <div class="about-inner">
+      <h2>Why VaultSync?</h2>
+      <p>
+        Built for individuals who want full visibility over their financial life
+        — without complexity. VaultSync creates a private, dedicated workspace
+        for every user the moment they sign up.
+      </p>
+      <div class="about-cards">
+        <div class="about-card">
+          <div class="ac-icon">🔐</div>
+          <h3>Private Workspace</h3>
+          <p>Each account gets its own isolated database — your data belongs only to you.</p>
+        </div>
+        <div class="about-card">
+          <div class="ac-icon">📊</div>
+          <h3>Smart Analytics</h3>
+          <p>Track income vs. expenses over months with visual cash flow charts.</p>
+        </div>
+        <div class="about-card">
+          <div class="ac-icon">🤖</div>
+          <h3>AI Analyst</h3>
+          <p>Get personalized insights and precautions based on your spending patterns.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-logo">
+      <div class="logo-icon small">₹</div>
+      <span>VaultSync</span>
+    </div>
+    <p>© 2026 VaultSync. All rights reserved.</p>
+  </footer>
+
+  <script src="js/landing.js"></script>
+</body>
+</html>

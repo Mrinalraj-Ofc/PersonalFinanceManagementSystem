@@ -1,0 +1,17 @@
+PLACE THE MICROSOFT JDBC DRIVER JAR HERE
+=========================================
+
+Download URL:
+https://learn.microsoft.com/en-us/sql/connect/jdbc/download-microsoft-jdbc-driver-for-sql-server
+
+Steps:
+1. Go to the URL above
+2. Download the latest version (e.g., mssql-jdbc-12.8.1.jre11.jar)
+3. Copy/paste the .jar file INTO THIS FOLDER (WEB-INF/lib/)
+4. In Eclipse: right-click the project → Build Path → Configure Build Path
+   → Libraries tab → Add JARs → select the jar from WEB-INF/lib
+
+The jar filename looks like:  mssql-jdbc-12.x.x.jreXX.jar
+Use the jre11 version if you are on Java 11/17 (recommended).
+
+DO NOT rename the jar file.

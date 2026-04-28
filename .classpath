@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+  <!-- Java source folder -->
+  <classpathentry kind="src" path="src"/>
+
+  <!-- JDK (Eclipse fills this in automatically) -->
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17"/>
+
+  <!-- Tomcat runtime (Eclipse adds this when you add a Server) -->
+  <classpathentry kind="con" path="org.eclipse.wst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v10.1"/>
+
+  <!-- WebApp libraries (mssql-jdbc.jar goes in WEB-INF/lib) -->
+  <classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
+
+  <!-- Output folder for compiled .class files -->
+  <classpathentry kind="output" path="build/classes"/>
+</classpath>
