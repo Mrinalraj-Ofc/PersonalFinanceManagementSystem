@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VaultSync — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/dashboard.css"/>
+</head>
+<body>
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sidebar">
+  <div class="s-logo">
+    <div class="logo-icon">₹</div>
+    <span>VaultSync</span>
+  </div>
+  <nav class="s-nav">
+    <p class="s-label">MENU</p>
+    <ul>
+      <li><a href="#" class="nav-item active" onclick="switchPage('overview',this)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Overview</a></li>
+      <li><a href="#" class="nav-item" onclick="switchPage('transactions',this)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
+        Transactions</a></li>
+      <li><a href="#" class="nav-item" onclick="switchPage('bills',this)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        Bills &amp; Loans</a></li>
+      <li><a href="#" class="nav-item" onclick="switchPage('analysis',this)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Analysis</a></li>
+    </ul>
+  </nav>
+  <div class="s-user">
+    <div class="user-av" id="userAvatar">AJ</div>
+    <div class="user-info">
+      <span class="user-name" id="sidebarName">Alex Johnson</span>
+      <span class="user-plan">Pro Account</span>
+    </div>
+    <button class="logout-btn" onclick="handleLogout()" title="Logout">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+    </button>
+  </div>
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<main class="main">
+
+  <!-- Topbar — only notification bell, no search -->
+  <header class="topbar">
+    <div></div>
+    <div class="topbar-right">
+      <button class="notif-btn" id="notifBtn" onclick="toggleNotif()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="notif-badge">2</span>
+      </button>
+      <div class="notif-drop" id="notifDrop">
+        <p class="notif-hd">Notifications</p>
+        <div class="notif-item"><span class="ndot orange"></span><div><p>Utility bill due in 3 days</p><span>1 hour ago</span></div></div>
+        <div class="notif-item"><span class="ndot green"></span><div><p>Savings goal milestone reached!</p><span>Yesterday</span></div></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══ PAGE: OVERVIEW ═══ -->
+  <section class="page active" id="page-overview">
+    <div class="page-hd">
+      <div>
+        <h1>Overview</h1>
+        <p class="page-sub">Here's your monthly financial summary, <strong id="welcomeName">Alex</strong>.</p>
+      </div>
+      <div class="hd-actions">
+        <div class="month-chip" id="monthChip">April 2026</div>
+        <button class="btn-dark" onclick="generateReport()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Generate Report
+        </button>
+      </div>
+    </div>
+
+    <!-- Stat cards -->
+    <div class="stat-grid">
+      <div class="stat-card clickable" onclick="openEditStats()">
+        <div class="sc-top"><div class="sc-icon blue">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        </div><span class="sc-badge green">↗ +2.4%</span></div>
+        <p class="sc-lbl">Total Balance</p>
+        <h2 class="sc-val" id="totalBalance">₹0</h2>
+      </div>
+      <div class="stat-card clickable" onclick="openEditStats()">
+        <div class="sc-top"><div class="sc-icon green">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div></div>
+        <p class="sc-lbl">Monthly Income</p>
+        <h2 class="sc-val" id="monthlyIncome">₹0</h2>
+      </div>
+      <div class="stat-card clickable" onclick="openEditStats()">
+        <div class="sc-top"><div class="sc-icon red">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        </div><span class="sc-badge red">↘ -1.2%</span></div>
+        <p class="sc-lbl">Monthly Expenses</p>
+        <h2 class="sc-val" id="monthlyExpenses">₹0</h2>
+      </div>
+      <div class="stat-card dark-card">
+        <div class="sc-top"><div class="sc-icon white">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        </div></div>
+        <p class="sc-lbl light">Net Savings Rate</p>
+        <h2 class="sc-val big" id="savingsRate">0%</h2>
+        <p class="sc-note" id="savingsNote">Add your income &amp; expenses above.</p>
+      </div>
+    </div>
+
+    <!-- Bottom row -->
+    <div class="overview-row">
+      <div class="card cashflow-card">
+        <div class="card-hd">
+          <div><h3>Cash Flow Statistics</h3><p class="card-sub">Average vs. actuals over months</p></div>
+          <select class="sel-sm" onchange="updateCashflowChart(this.value)">
+            <option value="6">Last 6 months</option>
+            <option value="3">Last 3 months</option>
+            <option value="12">Last 12 months</option>
+          </select>
+        </div>
+        <div class="cf-stats">
+          <div><span class="cf-lbl">AVG. INCOME</span><span class="cf-val green" id="avgIncome">₹0</span></div>
+          <div><span class="cf-lbl">AVG. EXPENSE</span><span class="cf-val red" id="avgExpense">₹0</span></div>
+          <div><span class="cf-lbl">AVG. SAVINGS</span><span class="cf-val blue" id="avgSavings">₹0</span></div>
+        </div>
+        <div class="chart-wrap"><canvas id="cashflowCanvas"></canvas></div>
+      </div>
+
+      <div class="card ai-card">
+        <div class="card-hd">
+          <div><h3>AI Analyst</h3><p class="card-sub">Recent insights &amp; precautions</p></div>
+          <button class="btn-sm-outline" onclick="runQuickAnalysis()">↻ Refresh</button>
+        </div>
+        <div id="aiInsights">
+          <div class="ai-placeholder">
+            <p>Set your OpenAI API key in Analysis page to get live AI insights.</p>
+          </div>
+        </div>
+        <a href="#" class="ai-key-link" onclick="switchPage('analysis',null);openApiKeyModal()">⚙ Configure API Key →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ PAGE: TRANSACTIONS ═══ -->
+  <section class="page" id="page-transactions">
+    <!-- Daily welcome banner -->
+    <div class="day-banner" id="dayBanner" style="display:none">
+      <span id="dayBannerText">Welcome</span>
+      <button class="banner-close" onclick="document.getElementById('dayBanner').style.display='none'">✕</button>
+    </div>
+
+    <div class="page-hd">
+      <div>
+        <h1>Transactions</h1>
+        <p class="page-sub">Traceback your savings and expenditures.</p>
+      </div>
+      <div class="hd-actions">
+        <button class="btn-outline" onclick="exportTransactions()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          Export
+        </button>
+        <button class="btn-blue" onclick="openModal('addTxModal')">+ Add Record</button>
+      </div>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="tx-filter-bar">
+      <div class="tx-tabs">
+        <button class="tx-tab active" onclick="filterTx(this,'all')">All</button>
+        <button class="tx-tab" onclick="filterTx(this,'income')">Income</button>
+        <button class="tx-tab" onclick="filterTx(this,'expense')">Expense</button>
+        <button class="tx-tab" onclick="filterTx(this,'savings')">Savings</button>
+      </div>
+      <div class="tx-right-filter">
+        <div class="search-wrap">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="txSearch" placeholder="Search records..." oninput="applyTxFilters()"/>
+        </div>
+        <div class="date-range-wrap">
+          <input type="date" id="txFrom" onchange="applyTxFilters()" title="From date"/>
+          <span>–</span>
+          <input type="date" id="txTo" onchange="applyTxFilters()" title="To date"/>
+          <button class="btn-xs" onclick="clearDateFilter()">Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card tx-card">
+      <table class="tx-table">
+        <thead>
+          <tr>
+            <th>TRANSACTION</th><th>CATEGORY</th><th>DATE</th><th>STATUS</th><th class="right">AMOUNT</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="txBody">
+          <tr><td colspan="6" class="empty-row">No transactions yet. Click "+ Add Record" to get started.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══ PAGE: BILLS & LOANS ═══ -->
+  <section class="page" id="page-bills">
+    <div class="page-hd">
+      <div>
+        <h1>Bills &amp; Loans</h1>
+        <p class="page-sub">Manage your active bills, due dates, and loan tracking.</p>
+      </div>
+      <div class="hd-actions">
+        <button class="btn-outline" onclick="openModal('addBillModal')">+ Add Bill</button>
+        <button class="btn-blue" onclick="openModal('addLoanModal')">+ Add Loan</button>
+      </div>
+    </div>
+
+    <div class="bills-layout">
+      <!-- LEFT: Upcoming Bills -->
+      <div class="card bills-card">
+        <div class="bills-hd">
+          <div class="bills-hd-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          <div>
+            <h3>Upcoming Bills</h3>
+            <p class="card-sub" id="billsSubtitle">No bills added yet.</p>
+          </div>
+          <button class="btn-sm-gray" onclick="openModal('addBillModal')">Manage All</button>
+        </div>
+        <div id="billsList">
+          <!-- empty by default, DOM adds items -->
+        </div>
+      </div>
+
+      <!-- RIGHT: Active Loans -->
+      <div class="card loans-card">
+        <div class="bills-hd">
+          <div class="bills-hd-icon blue">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </div>
+          <div>
+            <h3>Active Loans</h3>
+            <p class="card-sub">Total Outstanding: <strong id="totalOutstanding">₹0</strong></p>
+          </div>
+        </div>
+        <div id="loansList">
+          <!-- empty by default -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ PAGE: ANALYSIS ═══ -->
+  <section class="page" id="page-analysis">
+    <div class="page-hd">
+      <div>
+        <h1>Monthly Analysis</h1>
+        <p class="page-sub">AI-driven feedback, precautions, and structural insights.</p>
+      </div>
+      <div class="hd-actions">
+        <select class="sel-sm" id="analysisMonthSel"></select>
+        <button class="btn-outline" onclick="openApiKeyModal()">⚙ API Key</button>
+        <button class="btn-blue" onclick="runFullAnalysis()">✦ Generate Analysis</button>
+      </div>
+    </div>
+
+    <div class="analysis-layout">
+      <!-- LEFT: main content -->
+      <div class="analysis-main">
+        <!-- Executive Summary dark card -->
+        <div class="exec-card" id="execCard">
+          <div class="exec-top">
+            <div class="exec-icon-wrap">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+            </div>
+            <div>
+              <h2 class="exec-title">Executive Summary</h2>
+            </div>
+          </div>
+          <p class="exec-body" id="execText">
+            Click <strong>"Generate Analysis"</strong> above to get your AI-powered financial summary.
+            Make sure your OpenAI API key is configured.
+          </p>
+          <div class="exec-metrics">
+            <div class="exec-metric"><span>Savings Target</span><strong id="mSavings">—</strong></div>
+            <div class="exec-metric"><span>Expense Control</span><strong id="mExpense">—</strong></div>
+            <div class="exec-metric"><span>Debt Reduction</span><strong id="mDebt">—</strong></div>
+          </div>
+        </div>
+
+        <!-- Structured Precautions -->
+        <div class="precautions-wrap">
+          <h3 class="section-hd">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Structured Precautions
+          </h3>
+          <div id="precautionsList">
+            <p class="empty-hint">Precautions will appear after you generate analysis.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT sidebar -->
+      <div class="analysis-sidebar">
+        <div class="card spending-card">
+          <h3 class="sidebar-hd">
+            <span class="dot-blue"></span> Spending Distribution
+          </h3>
+          <div class="donut-wrap">
+            <canvas id="donutCanvas" width="160" height="160"></canvas>
+          </div>
+          <div id="spendingLegend" class="spending-legend"></div>
+        </div>
+
+        <div class="advice-card">
+          <h3>Need Custom Advice?</h3>
+          <p>Connect with your designated financial advisor to review these insights in detail.</p>
+          <button class="btn-purple" onclick="alert('Schedule review feature coming soon!')">Schedule Review</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main><!-- end .main -->
+
+<!-- ═══ MODALS ═══ -->
+
+<!-- Edit Stats -->
+<div class="modal-overlay" id="editStatsModal">
+  <div class="modal-box">
+    <div class="modal-hd"><h3>Update Financial Overview</h3><button class="modal-x" onclick="closeModal('editStatsModal')">✕</button></div>
+    <p class="modal-note">These values appear on your dashboard overview cards.</p>
+    <div class="fg"><label>Total Balance (₹)</label><input type="number" id="editBalance" placeholder="e.g. 3404840"/></div>
+    <div class="fg"><label>Monthly Income (₹)</label><input type="number" id="editIncome" placeholder="e.g. 680000"/></div>
+    <div class="fg"><label>Monthly Expenses (₹)</label><input type="number" id="editExpense" placeholder="e.g. 259200"/></div>
+    <button class="btn-blue full" onclick="saveStats()">Save Changes</button>
+  </div>
+</div>
+
+<!-- Add Transaction -->
+<div class="modal-overlay" id="addTxModal">
+  <div class="modal-box wide">
+    <div class="modal-hd"><h3>Add Transaction</h3><button class="modal-x" onclick="closeModal('addTxModal')">✕</button></div>
+    <p class="modal-day" id="addTxDay"></p>
+    <div class="form-row2">
+      <div class="fg"><label>Transaction Name</label><input type="text" id="txName" placeholder="e.g. TechCorp Salary"/></div>
+      <div class="fg"><label>Type</label>
+        <select id="txType" onchange="updateCategories()">
+          <option value="income">Income</option>
+          <option value="expense">Expense</option>
+          <option value="savings">Savings</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row2">
+      <div class="fg"><label>Category</label><select id="txCategory"></select></div>
+      <div class="fg"><label>Amount (₹)</label><input type="number" id="txAmt" placeholder="e.g. 680000"/></div>
+    </div>
+    <div class="form-row2">
+      <div class="fg"><label>Date</label><input type="date" id="txDate"/></div>
+      <div class="fg"><label>Status</label>
+        <select id="txStatus">
+          <option value="completed">Completed</option>
+          <option value="pending">Pending</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn-blue full" onclick="addTransaction()">Add Transaction</button>
+  </div>
+</div>
+
+<!-- Add Bill -->
+<div class="modal-overlay" id="addBillModal">
+  <div class="modal-box">
+    <div class="modal-hd"><h3>Add Bill</h3><button class="modal-x" onclick="closeModal('addBillModal')">✕</button></div>
+    <div class="fg"><label>Bill Name</label><input type="text" id="billName" placeholder="e.g. Water Bill"/></div>
+    <div class="form-row2">
+      <div class="fg"><label>Amount (₹)</label><input type="number" id="billAmt" placeholder="e.g. 3600"/></div>
+      <div class="fg"><label>Due Date</label><input type="date" id="billDue"/></div>
+    </div>
+    <div class="fg chk-row"><label><input type="checkbox" id="billAutopay"/> AutoPay enabled</label></div>
+    <button class="btn-blue full" onclick="addBill()">Add Bill</button>
+  </div>
+</div>
+
+<!-- Pay Bill -->
+<div class="modal-overlay" id="payBillModal">
+  <div class="modal-box">
+    <div class="modal-hd"><h3>Pay Bill</h3><button class="modal-x" onclick="closeModal('payBillModal')">✕</button></div>
+    <p class="modal-sub" id="payBillName"></p>
+    <p class="modal-info">Amount Due: <strong id="payBillDue"></strong></p>
+    <div class="fg"><label>Amount to Pay (₹) — Full or Partial</label>
+      <input type="number" id="payBillAmt" placeholder="Enter payment amount"/></div>
+    <button class="btn-blue full" onclick="submitBillPayment()">Confirm Payment</button>
+  </div>
+</div>
+
+<!-- Add Loan -->
+<div class="modal-overlay" id="addLoanModal">
+  <div class="modal-box wide">
+    <div class="modal-hd"><h3>Add Loan</h3><button class="modal-x" onclick="closeModal('addLoanModal')">✕</button></div>
+    <div class="form-row2">
+      <div class="fg"><label>Loan Name</label><input type="text" id="loanName" placeholder="e.g. Auto Loan"/></div>
+      <div class="fg"><label>Total Amount (₹)</label><input type="number" id="loanTotal" placeholder="e.g. 2000000"/></div>
+    </div>
+    <div class="form-row2">
+      <div class="fg"><label>APR (%)</label><input type="number" id="loanApr" placeholder="e.g. 4.5" step="0.1"/></div>
+      <div class="fg"><label>Monthly EMI (₹)</label><input type="number" id="loanEmi" placeholder="e.g. 36000"/></div>
+    </div>
+    <div class="form-row2">
+      <div class="fg"><label>Already Paid (₹)</label><input type="number" id="loanPaid" placeholder="0" value="0"/></div>
+      <div class="fg"><label>Next Payment Date</label><input type="date" id="loanNext"/></div>
+    </div>
+    <button class="btn-blue full" onclick="addLoan()">Add Loan</button>
+  </div>
+</div>
+
+<!-- Pay Loan -->
+<div class="modal-overlay" id="payLoanModal">
+  <div class="modal-box">
+    <div class="modal-hd"><h3>Loan Payment</h3><button class="modal-x" onclick="closeModal('payLoanModal')">✕</button></div>
+    <p class="modal-sub" id="payLoanName"></p>
+    <div class="modal-info-row">
+      <span>Remaining: <strong id="payLoanRemaining"></strong></span>
+      <span>Monthly EMI: <strong id="payLoanEmi"></strong></span>
+    </div>
+    <div class="fg"><label>Payment Option</label>
+      <select id="payLoanType" onchange="updateLoanPayAmt()">
+        <option value="emi">Regular EMI (1 month)</option>
+        <option value="advance2">Advance — 2 months</option>
+        <option value="advance3">Advance — 3 months</option>
+        <option value="advance4">Advance — 4 months</option>
+        <option value="advance6">Advance — 6 months</option>
+        <option value="custom">Custom Amount</option>
+      </select>
+    </div>
+    <div class="fg"><label>Pay Amount (₹)</label>
+      <input type="number" id="payLoanAmt"/></div>
+    <button class="btn-blue full" onclick="submitLoanPayment()">Confirm Payment</button>
+  </div>
+</div>
+
+<!-- API Key Modal -->
+<div class="modal-overlay" id="apiKeyModal">
+  <div class="modal-box">
+    <div class="modal-hd"><h3>OpenAI API Key</h3><button class="modal-x" onclick="closeModal('apiKeyModal')">✕</button></div>
+    <p class="modal-note">Your key is stored only in your browser's localStorage. It is never sent to VaultSync servers.</p>
+    <div class="fg"><label>API Key</label>
+      <input type="password" id="apiKeyInput" placeholder="sk-..."/></div>
+    <div id="apiKeyStatus" class="api-key-status" style="display:none"></div>
+    <button class="btn-blue full" onclick="saveApiKey()">Save Key</button>
+  </div>
+</div>
+
+<!-- Setup Modal (first login) -->
+<div class="modal-overlay" id="setupModal" style="display:none">
+  <div class="modal-box">
+    <h3 class="welcome-hd">Welcome to VaultSync! 🎉</h3>
+    <p class="modal-note">Set up your financial profile to get started.</p>
+    <div class="fg"><label>Total Balance (₹)</label><input type="number" id="setupBalance" placeholder="e.g. 3404840"/></div>
+    <div class="fg"><label>Monthly Income (₹)</label><input type="number" id="setupIncome" placeholder="e.g. 680000"/></div>
+    <div class="fg"><label>Monthly Budget (₹)</label><input type="number" id="setupExpense" placeholder="e.g. 259200"/></div>
+    <button class="btn-blue full" onclick="saveSetup()">Launch My Dashboard</button>
+  </div>
+</div>
+
+<script src="js/dashboard.js"></script>
+<script src="js/transactions.js"></script>
+<script src="js/bills.js"></script>
+<script src="js/analysis.js"></script>
+</body>
+</html>

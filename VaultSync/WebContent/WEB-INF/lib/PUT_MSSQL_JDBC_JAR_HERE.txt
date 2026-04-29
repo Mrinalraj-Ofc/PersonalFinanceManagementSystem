@@ -1,0 +1,10 @@
+PUT THE MICROSOFT JDBC DRIVER JAR FILE IN THIS FOLDER
+=====================================================
+Download: https://learn.microsoft.com/en-us/sql/connect/jdbc/download-microsoft-jdbc-driver-for-sql-server
+
+File to download: mssql-jdbc-12.x.x.jre11.jar
+
+After placing it here:
+  Eclipse → Right-click project → Build Path → Add JARs → select this jar
+
+DO NOT rename the jar file.

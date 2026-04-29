@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
+                             https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+         version="6.0">
+
+  <display-name>VaultSync</display-name>
+
+  <!-- Default page = landing page -->
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+  </welcome-file-list>
+
+  <!-- Session timeout: 30 minutes of inactivity -->
+  <session-config>
+    <session-timeout>30</session-timeout>
+  </session-config>
+
+  <!-- Redirect unknown pages back to landing -->
+  <error-page>
+    <error-code>404</error-code>
+    <location>/index.html</location>
+  </error-page>
+  <error-page>
+    <error-code>500</error-code>
+    <location>/index.html</location>
+  </error-page>
+
+  <!--
+    All servlet mappings are handled by @WebServlet annotations.
+    You do NOT need to add them here manually.
+
+    Servlet list:
+      /SignupServlet          → SignupServlet.java
+      /LoginServlet           → LoginServlet.java
+      /LogoutServlet          → LogoutServlet.java
+      /SessionCheckServlet    → SessionCheckServlet.java
+      /OverviewServlet        → OverviewServlet.java
+      /TransactionServlet     → TransactionServlet.java
+      /BillServlet            → BillServlet.java
+      /LoanServlet            → LoanServlet.java
+  -->
+
+</web-app>
